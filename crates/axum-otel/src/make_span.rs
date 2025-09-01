@@ -114,7 +114,6 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
                 )
             }
         }
-        println!("self.level: {:?}", self.level);
         let span = match self.level {
             Level::ERROR => make_span!(Level::ERROR),
             Level::WARN => make_span!(Level::WARN),
