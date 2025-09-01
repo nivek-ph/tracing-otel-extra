@@ -9,7 +9,7 @@ resolver = "2"
 
 [workspace.package]
 rust-version = "1.82"
-version = "0.29.4"
+version = "0.29.5"
 authors = ["nivek <h49987180@gmail.com>"]
 edition = "2021"
 license = "MIT/Apache-2.0"
