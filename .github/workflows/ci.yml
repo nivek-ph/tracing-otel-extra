@@ -28,7 +28,7 @@ jobs:
             ${{ runner.os }}-cargo-
       - uses: mozilla-actions/sccache-action@v0.0.9
         with:
-          version: 'v0.10.0'
+          version: "v0.10.0"
       - name: Check formatting
         run: cargo fmt -- --check
       - name: Clippy
