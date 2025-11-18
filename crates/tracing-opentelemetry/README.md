@@ -18,7 +18,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-tracing-opentelemetry-extra = "0.30.x"
+tracing-opentelemetry-extra = "0.31.x"
 ```
 
 ## Quick Start

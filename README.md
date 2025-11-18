@@ -50,12 +50,12 @@ Add the desired crate to your `Cargo.toml`:
 ```toml
 # For Axum web framework integration
 [dependencies]
-axum-otel = "0.30"
+axum-otel = "0.31"
 axum = { version = "0.8", features = ["macros"] }
 tower-http = { version = "0.6.6", features = ["trace"] }
 
 # For general OpenTelemetry tracing
-tracing-otel-extra = "0.30"
+tracing-otel-extra = "0.31"
 tracing = "0.1"
 tokio = { version = "1.0", features = ["full"] }
 ```
