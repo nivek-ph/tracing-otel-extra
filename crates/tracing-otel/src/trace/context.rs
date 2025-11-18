@@ -95,7 +95,7 @@ pub fn set_otel_parent(headers: &http::HeaderMap, span: &tracing::Span) {
     let remote_context = extract_context_from_headers(headers);
     // Set parent on the specific span
     // This must be called immediately after span creation, before the span is used
-    if let Err(e) = span.set_parent(remote_context.clone()) {
+    if let Err(e) = span.set_parent(remote_context) {
         // Log error but don't fail - this can happen if the span was already started
         eprintln!("Failed to set parent on span: {:?}", e);
     }
