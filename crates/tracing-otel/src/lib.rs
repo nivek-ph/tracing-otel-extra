@@ -33,9 +33,9 @@
 //!         ])
 //!         .init()
 //!         .expect("Failed to initialize tracing");
-//!     
+//!
 //!     // Your application code here
-//!     
+//!
 //!     // Cleanup is handled automatically when the guard is dropped
 //! }
 //! ```
@@ -52,7 +52,7 @@
 //!     // LOG_SAMPLE_RATIO=0.1
 //!     let _guard = init_logging_from_env(None)
 //!         .expect("Failed to initialize tracing from environment");
-//!     
+//!
 //!     // Your application code here
 //! }
 //! ```

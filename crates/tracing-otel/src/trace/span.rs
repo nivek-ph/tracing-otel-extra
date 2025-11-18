@@ -48,8 +48,8 @@ pub fn make_request_span<B>(level: Level, request: &Request<B>) -> Span {
         otel.kind = ?Empty,
         otel.status = Empty,
         // Request tracking
-        request.id = %fields::extract_request_id(request),
-        trace.id = Empty
+        request_id = %fields::extract_request_id(request),
+        trace_id = Empty
     );
     context::set_otel_parent(request.headers(), &span);
     span

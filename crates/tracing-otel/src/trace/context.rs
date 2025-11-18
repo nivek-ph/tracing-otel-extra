@@ -67,7 +67,7 @@ pub fn current_span_id() -> SpanId {
 /// # Arguments
 ///
 /// * `headers` - The HTTP headers containing the trace context
-/// * `span` - The current tracing span to set the parent for
+/// * `span` - The tracing span to set the parent for
 ///
 /// # Behavior
 ///
@@ -83,30 +83,26 @@ pub fn current_span_id() -> SpanId {
 ///
 /// ```rust
 /// use http::HeaderMap;
-/// use tracing::Span;
 /// use tracing_otel_extra::extract::context::set_otel_parent;
 ///
 /// let headers = HeaderMap::new();
-/// let span = Span::current();
+/// let span = tracing::info_span!("my_span");
 /// set_otel_parent(&headers, &span);
 /// ```
 pub fn set_otel_parent(headers: &http::HeaderMap, span: &tracing::Span) {
     use opentelemetry::trace::TraceContextExt as _;
     use tracing_opentelemetry::OpenTelemetrySpanExt as _;
-
     let remote_context = extract_context_from_headers(headers);
+    // Set parent on the specific span
+    // This must be called immediately after span creation, before the span is used
+    if let Err(e) = span.set_parent(remote_context.clone()) {
+        // Log error but don't fail - this can happen if the span was already started
+        eprintln!("Failed to set parent on span: {:?}", e);
+    }
 
-    // If we have a remote parent span, this will be the parent's trace identifier.
-    // If not, it will be the newly generated trace identifier with this request as root span.
-    let remote_span = remote_context.span();
-    let remote_span_context = remote_span.span_context();
-    let trace_id = if remote_span_context.is_valid() {
-        remote_span_context.trace_id().to_string()
-    } else {
-        span.context().span().span_context().trace_id().to_string()
-    };
-    let _ = span.set_parent(remote_context);
-    span.record(TRACE_ID, tracing::field::display(trace_id));
+    // Record the trace ID in the span for logging purposes
+    let trace_id = span.context().span().span_context().trace_id().to_string();
+    span.record(TRACE_ID, trace_id);
 }
 
 #[cfg(test)]
@@ -197,12 +193,12 @@ mod tests {
         println!("Setting traceparent header: {}", traceparent);
         headers.insert("traceparent", traceparent.parse().unwrap());
 
+        // Create span first, then set parent (matching real-world usage)
         let span = create_span();
-        println!(
-            "Before set_otel_parent - span trace_id: {}",
-            span.context().span().span_context().trace_id().to_string()
-        );
+
+        // Set parent on the span - this must be called immediately after creation
         set_otel_parent(&headers, &span);
+
         println!(
             "After set_otel_parent - span trace_id: {}",
             span.context().span().span_context().trace_id().to_string()
