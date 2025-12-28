@@ -54,7 +54,7 @@ pub fn extract_request_id_from_headers(headers: &http::HeaderMap) -> Option<&str
 /// Extract the request id from the request headers
 pub fn extract_field_from_headers<'a>(
     headers: &'a http::HeaderMap,
-    field: &'a HeaderName,
+    field: &HeaderName,
 ) -> Option<&'a str> {
     headers.get(field).and_then(|value| value.to_str().ok())
 }
