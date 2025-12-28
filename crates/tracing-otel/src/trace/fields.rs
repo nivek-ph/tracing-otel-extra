@@ -30,12 +30,12 @@ pub fn extract_http_target<T>(request: &http::Request<T>) -> Option<&str> {
 
 /// Extract the user agent from the request headers
 pub fn extract_user_agent<T>(request: &http::Request<T>) -> Option<&str> {
-    extract_field_from_headers(request.headers(), http::header::USER_AGENT)
+    extract_field_from_headers(request.headers(), &http::header::USER_AGENT)
 }
 
 /// Extract the client ip from the request headers
 pub fn extract_host<T>(request: &http::Request<T>) -> Option<&str> {
-    extract_field_from_headers(request.headers(), http::header::HOST)
+    extract_field_from_headers(request.headers(), &http::header::HOST)
 }
 
 /// Extract the request id from the request headers
@@ -52,7 +52,10 @@ pub fn extract_request_id_from_headers(headers: &http::HeaderMap) -> Option<&str
 }
 
 /// Extract the request id from the request headers
-pub fn extract_field_from_headers(headers: &http::HeaderMap, field: HeaderName) -> Option<&str> {
+pub fn extract_field_from_headers<'a>(
+    headers: &'a http::HeaderMap,
+    field: &'a HeaderName,
+) -> Option<&'a str> {
     headers.get(field).and_then(|value| value.to_str().ok())
 }
 

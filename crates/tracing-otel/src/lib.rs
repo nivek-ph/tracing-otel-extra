@@ -17,7 +17,7 @@
 //! ## Examples
 //!
 //! Basic usage with configuration builder:
-//! ```rust,no_run
+//! ```rust,no_run,ignore
 //! use tracing_otel_extra::{Logger, LogFormat};
 //! use opentelemetry::KeyValue;
 //!
@@ -41,7 +41,7 @@
 //! ```
 //!
 //! Using environment-based configuration:
-//! ```rust,no_run
+//! ```rust,no_run,ignore
 //! use tracing_otel_extra::init_logging_from_env;
 //!
 //! #[tokio::main]

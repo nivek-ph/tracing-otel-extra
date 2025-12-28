@@ -101,8 +101,8 @@ pub fn set_otel_parent(headers: &http::HeaderMap, span: &tracing::Span) {
     }
 
     // Record the trace ID in the span for logging purposes
-    let trace_id = span.context().span().span_context().trace_id().to_string();
-    span.record(TRACE_ID, trace_id);
+    let trace_id = span.context().span().span_context().trace_id();
+    span.record(TRACE_ID, tracing::field::display(trace_id));
 }
 
 #[cfg(test)]
