@@ -56,7 +56,12 @@ opentelemetry_sdk = { version = "0.31.0", default-features = false, features = [
     "trace",
 ] }
 opentelemetry-http = { version = "0.31.0", default-features = false }
-opentelemetry-otlp = { version = "0.31.0", features = ["grpc-tonic"] }
+opentelemetry-otlp = { version = "0.31.0", features = [
+    "grpc-tonic",
+    "http-proto",
+    "tls",
+    "reqwest-rustls",
+] }
 
 tracing = { version = "0.1" }
 tracing-opentelemetry = { version = "0.32.0" }

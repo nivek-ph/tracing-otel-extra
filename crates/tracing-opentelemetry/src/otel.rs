@@ -8,12 +8,57 @@
 
 use anyhow::{Context, Result};
 use opentelemetry::global;
+use opentelemetry_otlp::Protocol;
 use opentelemetry_sdk::{
     metrics::{MeterProviderBuilder, PeriodicReader, SdkMeterProvider},
     propagation::TraceContextPropagator,
     trace::{RandomIdGenerator, Sampler, SdkTracerProvider},
     Resource,
 };
+use std::time::Duration;
+
+fn protocol_from_env() -> Option<Protocol> {
+    let value = std::env::var("OTEL_EXPORTER_OTLP_PROTOCOL")
+        .ok()?
+        .trim()
+        .to_ascii_lowercase();
+    match value.as_str() {
+        "grpc" => Some(Protocol::Grpc),
+        "http/protobuf" | "http/proto" => Some(Protocol::HttpBinary),
+        "http/json" => Some(Protocol::HttpJson),
+        _ => None,
+    }
+}
+
+fn build_span_exporter() -> Result<opentelemetry_otlp::SpanExporter> {
+    let protocol = protocol_from_env().unwrap_or(Protocol::Grpc);
+    match protocol {
+        Protocol::Grpc => opentelemetry_otlp::SpanExporter::builder()
+            .with_tonic()
+            .build()
+            .context("Failed to build OTLP gRPC exporter"),
+        Protocol::HttpBinary | Protocol::HttpJson => opentelemetry_otlp::SpanExporter::builder()
+            .with_http()
+            .build()
+            .context("Failed to build OTLP HTTP exporter"),
+    }
+}
+
+fn build_metric_exporter() -> Result<opentelemetry_otlp::MetricExporter> {
+    let protocol = protocol_from_env().unwrap_or(Protocol::Grpc);
+    match protocol {
+        Protocol::Grpc => opentelemetry_otlp::MetricExporter::builder()
+            .with_tonic()
+            .with_temporality(opentelemetry_sdk::metrics::Temporality::default())
+            .build()
+            .context("Failed to build OTLP gRPC exporter"),
+        Protocol::HttpBinary | Protocol::HttpJson => opentelemetry_otlp::MetricExporter::builder()
+            .with_http()
+            .with_temporality(opentelemetry_sdk::metrics::Temporality::default())
+            .build()
+            .context("Failed to build OTLP HTTP exporter"),
+    }
+}
 
 /// Initializes a tracer provider for OpenTelemetry tracing.
 ///
@@ -49,10 +94,7 @@ use opentelemetry_sdk::{
 pub fn init_tracer_provider(resource: &Resource, sample_ratio: f64) -> Result<SdkTracerProvider> {
     global::set_text_map_propagator(TraceContextPropagator::new());
 
-    let exporter = opentelemetry_otlp::SpanExporter::builder()
-        .with_tonic()
-        .build()
-        .context("Failed to build OTLP exporter")?;
+    let exporter = build_span_exporter().context("Failed to build OTLP exporter")?;
 
     let tracer_provider = SdkTracerProvider::builder()
         .with_sampler(Sampler::ParentBased(Box::new(Sampler::TraceIdRatioBased(
@@ -102,14 +144,10 @@ pub fn init_meter_provider(
     resource: &Resource,
     metrics_interval_secs: u64,
 ) -> Result<SdkMeterProvider> {
-    let exporter = opentelemetry_otlp::MetricExporter::builder()
-        .with_tonic()
-        .with_temporality(opentelemetry_sdk::metrics::Temporality::default())
-        .build()
-        .context("Failed to build OTLP exporter")?;
+    let exporter = build_metric_exporter().context("Failed to build OTLP metric exporter")?;
 
     let reader = PeriodicReader::builder(exporter)
-        .with_interval(std::time::Duration::from_secs(metrics_interval_secs))
+        .with_interval(Duration::from_secs(metrics_interval_secs))
         .build();
 
     let meter_builder = MeterProviderBuilder::default()
