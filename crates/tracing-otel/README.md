@@ -114,6 +114,15 @@ This library supports standard OpenTelemetry environment variables:
 # OTLP export endpoint
 export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 export OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+# HTTP OTLP options:
+# export OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+# export OTEL_EXPORTER_OTLP_PROTOCOL=http/json
+#
+# Specify Protocol for Traces and Metrics:
+# export OTEL_EXPORTER_OTLP_TRACES_PROTOCOL=http/protobuf
+# export OTEL_EXPORTER_OTLP_METRICS_PROTOCOL=http/json
+#
+# Default behavior: when no protocol env vars are set, both traces and metrics use grpc.
 
 # Log level (takes precedence over code configuration)
 export RUST_LOG=debug

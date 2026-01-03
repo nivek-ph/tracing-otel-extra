@@ -12,6 +12,23 @@ This crate provides enhanced OpenTelemetry integration for tracing applications.
 - Support for both tracing and metrics
 - Clean separation of concerns from other tracing libraries
 
+## OTLP Protocol Configuration
+
+This crate respects the standard OpenTelemetry protocol environment variables:
+
+```bash
+# Default protocol for all signals
+export OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+
+# Specify Protocol for Traces and Metrics:
+export OTEL_EXPORTER_OTLP_TRACES_PROTOCOL=http/protobuf
+export OTEL_EXPORTER_OTLP_METRICS_PROTOCOL=http/json
+```
+
+Supported values: `grpc`, `http/protobuf` (or `http/proto`), `http/json`.
+
+Default behavior: when no protocol env vars are set, both traces and metrics use `grpc`.
+
 ## Installation
 
 Add this to your `Cargo.toml`:

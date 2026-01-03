@@ -58,6 +58,7 @@ opentelemetry_sdk = { version = "0.31.0", default-features = false, features = [
 opentelemetry-http = { version = "0.31.0", default-features = false }
 opentelemetry-otlp = { version = "0.31.0", features = [
     "grpc-tonic",
+    "http-json",
     "http-proto",
     "tls",
     "reqwest-rustls",
