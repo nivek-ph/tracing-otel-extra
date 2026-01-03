@@ -1,8 +1,8 @@
 use crate::{
     logs::{LogFormat, Logger},
     otel::{
-        get_resource, init_meter_provider, init_tracer_provider, init_tracing_subscriber,
-        opentelemetry::KeyValue, OtelGuard,
+        get_resource, init_logger_provider, init_meter_provider, init_tracer_provider,
+        init_tracing_subscriber, opentelemetry::KeyValue, OtelGuard,
     },
 };
 use anyhow::{anyhow, Context, Result};
@@ -143,6 +143,7 @@ pub fn create_output_layers(logger: &Logger) -> Result<Vec<BoxLayer>> {
 /// This function sets up the entire tracing infrastructure, including:
 /// - OpenTelemetry tracing
 /// - Metrics collection
+/// - Logs collection (when enable_otel_logs is true)
 /// - Log formatting
 /// - Environment filtering
 ///
@@ -153,13 +154,12 @@ pub fn create_output_layers(logger: &Logger) -> Result<Vec<BoxLayer>> {
 /// * `sample_ratio` - The ratio of traces to sample (0.0 to 1.0)
 /// * `metrics_interval_secs` - The interval in seconds between metric collections
 /// * `level` - The default tracing level
-/// * `fmt_layer` - A formatting layer for the tracing output
-/// * `console_enabled` - Whether to enable console output
-/// * `file_appender` - Optional file appender configuration
+/// * `layers` - A vector of formatting layers for the tracing output
+/// * `enable_otel_logs` - Whether to enable OpenTelemetry logs export
 ///
 /// # Returns
 ///
-/// Returns a `Result` containing the configured `SdkTracerProvider` and `SdkMeterProvider`,
+/// Returns a `Result` containing the configured `OtelGuard`,
 /// or an error if initialization fails.
 ///
 /// # Examples
@@ -182,6 +182,7 @@ pub fn create_output_layers(logger: &Logger) -> Result<Vec<BoxLayer>> {
 ///         30,
 ///         Level::INFO,
 ///         layers,
+///         true, // enable OTel logs
 ///     )?;
 ///
 ///     // Your application code here...
@@ -198,11 +199,17 @@ pub fn setup_tracing(
     metrics_interval_secs: u64,
     level: Level,
     layers: Vec<BoxLayer>,
+    otel_logs_enabled: bool,
 ) -> Result<OtelGuard> {
     let env_filter = init_env_filter(&level);
     let resource = get_resource(service_name, attributes);
     let tracer_provider = init_tracer_provider(&resource, sample_ratio)?;
     let meter_provider = init_meter_provider(&resource, metrics_interval_secs)?;
+    let logger_provider = if otel_logs_enabled {
+        Some(init_logger_provider(&resource)?)
+    } else {
+        None
+    };
 
     let guard = init_tracing_subscriber(
         service_name,
@@ -210,6 +217,7 @@ pub fn setup_tracing(
         layers,
         tracer_provider,
         meter_provider,
+        logger_provider,
     )?;
 
     Ok(guard)

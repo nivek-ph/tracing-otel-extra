@@ -54,7 +54,9 @@ tower-http = { version = "0.6.6", features = ["trace"] }
 opentelemetry = { version = "0.31.0", default-features = false }
 opentelemetry_sdk = { version = "0.31.0", default-features = false, features = [
     "trace",
+    "logs",
 ] }
+opentelemetry-appender-tracing = { version = "0.31.0" }
 opentelemetry-http = { version = "0.31.0", default-features = false }
 opentelemetry-otlp = { version = "0.31.0", features = [
     "grpc-tonic",

@@ -9,7 +9,7 @@ This crate provides enhanced OpenTelemetry integration for tracing applications.
 - Easy OpenTelemetry initialization with OTLP exporter
 - Configurable sampling and resource attributes
 - Automatic cleanup with guard pattern
-- Support for both tracing and metrics
+- Support for tracing, metrics, and logs
 - Clean separation of concerns from other tracing libraries
 
 ## OTLP Protocol Configuration
@@ -20,14 +20,15 @@ This crate respects the standard OpenTelemetry protocol environment variables:
 # Default protocol for all signals
 export OTEL_EXPORTER_OTLP_PROTOCOL=grpc
 
-# Specify Protocol for Traces and Metrics:
+# Specify Protocol for Traces, Metrics, and Logs:
 export OTEL_EXPORTER_OTLP_TRACES_PROTOCOL=http/protobuf
 export OTEL_EXPORTER_OTLP_METRICS_PROTOCOL=http/json
+export OTEL_EXPORTER_OTLP_LOGS_PROTOCOL=grpc
 ```
 
 Supported values: `grpc`, `http/protobuf` (or `http/proto`), `http/json`.
 
-Default behavior: when no protocol env vars are set, both traces and metrics use `grpc`.
+Default behavior: when no protocol env vars are set, traces, metrics, and logs all use `grpc`.
 
 ## Installation
 
@@ -44,7 +45,7 @@ tracing-opentelemetry-extra = "0.31.x"
 
 ```rust
 use opentelemetry::KeyValue;
-use tracing_opentelemetry_extra::{get_resource, init_tracer_provider, init_meter_provider, OtelGuard};
+use tracing_opentelemetry_extra::{get_resource, init_tracer_provider, init_meter_provider, init_logger_provider, OtelGuard};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -60,11 +61,10 @@ async fn main() -> anyhow::Result<()> {
     // Initialize providers
     let tracer_provider = init_tracer_provider(&resource, 1.0)?;
     let meter_provider = init_meter_provider(&resource, 30)?;
-
-    // initialize tracing subscriber with otel layers
+    let logger_provider = init_logger_provider(&resource)?;
 
     // Create guard for automatic cleanup
-    let _guard = OtelGuard::new(Some(tracer_provider), Some(meter_provider));
+    let _guard = OtelGuard::new(Some(tracer_provider), Some(meter_provider), Some(logger_provider));
 
     // Your application code here...
     tracing::info!("Application started");
@@ -78,7 +78,8 @@ async fn main() -> anyhow::Result<()> {
 
 ```rust
 use opentelemetry::KeyValue;
-use tracing_opentelemetry_extra::{get_resource, init_tracer_provider, init_meter_provider, init_tracing_subscriber, OtelGuard};
+use tracing::Level;
+use tracing_opentelemetry_extra::{get_resource, init_tracer_provider, init_meter_provider, init_logger_provider, init_tracing_subscriber, init_env_filter, OtelGuard};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
 #[tokio::main]
@@ -90,17 +91,19 @@ async fn main() -> anyhow::Result<()> {
     // Initialize providers
     let tracer_provider = init_tracer_provider(&resource, 1.0)?;
     let meter_provider = init_meter_provider(&resource, 30)?;
+    let logger_provider = init_logger_provider(&resource)?;
 
     // Set up tracing subscriber
     let env_filter = init_env_filter(&Level::INFO);
     
-    // Create guard for cleanup
+    // Create guard for cleanup (logger_provider is optional, pass None to disable OTel logs)
     let _guard = init_tracing_subscriber(
         service_name,
         env_filter,
         vec![Box::new(tracing_subscriber::fmt::layer())],
         tracer_provider,
         meter_provider,
+        Some(logger_provider),
     )?;
 
     // Your application code here...

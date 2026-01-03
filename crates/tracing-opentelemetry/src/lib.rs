@@ -19,7 +19,7 @@
 //! Basic usage with manual setup:
 //! ```rust,no_run
 //! use opentelemetry::KeyValue;
-//! use tracing_opentelemetry_extra::{get_resource, init_tracer_provider, init_env_filter, init_tracing_subscriber, init_meter_provider};
+//! use tracing_opentelemetry_extra::{get_resource, init_tracer_provider, init_env_filter, init_tracing_subscriber, init_meter_provider, init_logger_provider};
 //! use tracing::Level;
 //!
 //! #[tokio::main]
@@ -36,6 +36,7 @@
 //!     // Initialize providers
 //!     let tracer_provider = init_tracer_provider(&resource, 1.0)?;
 //!     let meter_provider = init_meter_provider(&resource, 30)?;
+//!     let logger_provider = init_logger_provider(&resource)?;
 //!
 //!     // initialize tracing subscriber with otel layers
 //!     let _guard = init_tracing_subscriber(
@@ -44,6 +45,7 @@
 //!         vec![Box::new(tracing_subscriber::fmt::layer())],
 //!         tracer_provider,
 //!         meter_provider,
+//!         Some(logger_provider),
 //!     )?;
 //!     // Your application code here...
 //!
@@ -60,7 +62,7 @@ mod subscriber;
 
 // Re-exports
 pub use guard::OtelGuard;
-pub use otel::{init_meter_provider, init_tracer_provider};
+pub use otel::{init_logger_provider, init_meter_provider, init_tracer_provider};
 pub use resource::get_resource;
 #[cfg(feature = "subscriber")]
 pub use subscriber::{init_env_filter, init_tracing_subscriber, BoxLayer};

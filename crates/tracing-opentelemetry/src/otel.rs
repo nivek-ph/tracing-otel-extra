@@ -14,8 +14,11 @@ use opentelemetry_otlp::{Protocol, WithExportConfig, OTEL_EXPORTER_OTLP_PROTOCOL
 const OTEL_EXPORTER_OTLP_TRACES_PROTOCOL: &str = "OTEL_EXPORTER_OTLP_TRACES_PROTOCOL";
 /// Environment variable for signal-specific metrics protocol override.
 const OTEL_EXPORTER_OTLP_METRICS_PROTOCOL: &str = "OTEL_EXPORTER_OTLP_METRICS_PROTOCOL";
+/// Environment variable for signal-specific logs protocol override.
+const OTEL_EXPORTER_OTLP_LOGS_PROTOCOL: &str = "OTEL_EXPORTER_OTLP_LOGS_PROTOCOL";
 
 use opentelemetry_sdk::{
+    logs::SdkLoggerProvider,
     metrics::{MeterProviderBuilder, PeriodicReader, SdkMeterProvider},
     propagation::TraceContextPropagator,
     trace::{RandomIdGenerator, Sampler, SdkTracerProvider},
@@ -101,6 +104,29 @@ fn build_metric_exporter() -> Result<opentelemetry_otlp::MetricExporter> {
             .with_temporality(opentelemetry_sdk::metrics::Temporality::default())
             .build()
             .context("Failed to build OTLP metric exporter (HTTP)"),
+    }
+}
+
+/// Builds the log exporter based on the configured protocol.
+///
+/// Reads protocol from environment variables in order:
+/// 1. `OTEL_EXPORTER_OTLP_LOGS_PROTOCOL`
+/// 2. `OTEL_EXPORTER_OTLP_PROTOCOL`
+/// 3. Falls back to gRPC
+fn build_log_exporter() -> Result<opentelemetry_otlp::LogExporter> {
+    let protocol = protocol_from_env(OTEL_EXPORTER_OTLP_LOGS_PROTOCOL)
+        .or_else(|| protocol_from_env(OTEL_EXPORTER_OTLP_PROTOCOL))
+        .unwrap_or(Protocol::Grpc);
+    match protocol {
+        Protocol::Grpc => opentelemetry_otlp::LogExporter::builder()
+            .with_tonic()
+            .build()
+            .context("Failed to build OTLP log exporter (gRPC)"),
+        _ => opentelemetry_otlp::LogExporter::builder()
+            .with_http()
+            .with_protocol(protocol)
+            .build()
+            .context("Failed to build OTLP log exporter (HTTP)"),
     }
 }
 
@@ -202,4 +228,44 @@ pub fn init_meter_provider(
     global::set_meter_provider(meter_provider.clone());
 
     Ok(meter_provider)
+}
+
+/// Initializes a logger provider for OpenTelemetry logs.
+///
+/// This function sets up a logger provider with the following features:
+/// - Batch exporter for efficient log export
+/// - OTLP exporter
+/// - Custom resource attributes
+///
+/// # Arguments
+///
+/// * `resource` - The OpenTelemetry resource to use
+///
+/// # Returns
+///
+/// Returns a `Result` containing the configured `SdkLoggerProvider` or an error
+/// if initialization fails.
+///
+/// # Examples
+///
+/// ```rust
+/// use tracing_opentelemetry_extra::{get_resource, init_logger_provider};
+/// use opentelemetry::KeyValue;
+///
+/// #[tokio::main]
+/// async fn main() -> anyhow::Result<()> {
+///     let resource = get_resource("my-service", &[]);
+///     let logger_provider = init_logger_provider(&resource)?;
+///     Ok(())
+/// }
+/// ```
+pub fn init_logger_provider(resource: &Resource) -> Result<SdkLoggerProvider> {
+    let exporter = build_log_exporter().context("Failed to build OTLP log exporter")?;
+
+    let logger_provider = SdkLoggerProvider::builder()
+        .with_resource(resource.clone())
+        .with_batch_exporter(exporter)
+        .build();
+
+    Ok(logger_provider)
 }

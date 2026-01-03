@@ -1,6 +1,9 @@
 use crate::guard::OtelGuard;
 use anyhow::Result;
-use opentelemetry_sdk::{metrics::SdkMeterProvider, trace::SdkTracerProvider};
+use opentelemetry_appender_tracing::layer::OpenTelemetryTracingBridge;
+use opentelemetry_sdk::{
+    logs::SdkLoggerProvider, metrics::SdkMeterProvider, trace::SdkTracerProvider,
+};
 use tracing::Level;
 use tracing_subscriber::{
     layer::SubscriberExt, util::SubscriberInitExt, EnvFilter, Layer, Registry,
@@ -37,6 +40,7 @@ pub fn init_tracing_subscriber(
     mut layers: Vec<BoxLayer>,
     tracer_provider: SdkTracerProvider,
     meter_provider: SdkMeterProvider,
+    logger_provider: Option<SdkLoggerProvider>,
 ) -> Result<OtelGuard> {
     use opentelemetry::trace::TracerProvider as _;
     // Set up telemetry layer with tracer
@@ -44,7 +48,13 @@ pub fn init_tracing_subscriber(
     let metrics_layer = tracing_opentelemetry::MetricsLayer::new(meter_provider.clone());
     let otel_layer = tracing_opentelemetry::OpenTelemetryLayer::new(tracer);
 
-    let extended_layers: Vec<BoxLayer> = vec![Box::new(metrics_layer), Box::new(otel_layer)];
+    let mut extended_layers: Vec<BoxLayer> = vec![Box::new(metrics_layer), Box::new(otel_layer)];
+
+    // Add OpenTelemetry logs bridge layer if logger_provider is provided
+    if let Some(ref logger_provider) = logger_provider {
+        let otel_logs_layer = OpenTelemetryTracingBridge::new(logger_provider);
+        extended_layers.push(Box::new(otel_logs_layer));
+    }
 
     layers.extend(extended_layers);
 
@@ -52,5 +62,9 @@ pub fn init_tracing_subscriber(
         .with(layers)
         .with(env_filter)
         .init();
-    Ok(OtelGuard::new(Some(tracer_provider), Some(meter_provider)))
+    Ok(OtelGuard::new(
+        Some(tracer_provider),
+        Some(meter_provider),
+        logger_provider,
+    ))
 }

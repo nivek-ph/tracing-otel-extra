@@ -340,6 +340,10 @@ pub struct Logger {
     /// Set this if you want to write log to file
     #[serde(default)]
     pub file_appender: Option<LoggerFileAppender>,
+
+    /// Set this if you want to write log to OpenTelemetry
+    #[serde(default)]
+    pub otel_logs_enabled: bool,
 }
 
 #[derive(Debug, Clone, serde::Deserialize)]
@@ -584,6 +588,7 @@ impl Default for Logger {
             attributes: vec![],
             console_enabled: default::console_enabled(),
             file_appender: None,
+            otel_logs_enabled: false,
         }
     }
 }
@@ -831,6 +836,7 @@ pub fn init_tracing_from_logger(logger: Logger) -> Result<OtelGuard> {
         logger.metrics_interval_secs,
         logger.level,
         layers,
+        logger.otel_logs_enabled,
     )
     .context("Failed to initialize tracing")?;
     Ok(guard)

@@ -105,6 +105,7 @@ async fn main() -> anyhow::Result<()> {
 | `sample_ratio`          | `f64`           | `1.0`      | Trace sampling ratio (0.0-1.0)                         |
 | `metrics_interval_secs` | `u64`           | `30`       | Metrics collection and export interval (seconds)       |
 | `attributes`            | `Vec<KeyValue>` | `[]`       | Custom OpenTelemetry attributes                        |
+| `otel_logs_enabled`     | `bool`          | `false`    | Whether to enable OpenTelemetry logs export            |
 
 ## Environment Variable Configuration
 

@@ -1,22 +1,27 @@
 use anyhow::Result;
-use opentelemetry_sdk::{metrics::SdkMeterProvider, trace::SdkTracerProvider};
+use opentelemetry_sdk::{
+    logs::SdkLoggerProvider, metrics::SdkMeterProvider, trace::SdkTracerProvider,
+};
 
-/// A guard that holds the tracer provider and ensures proper cleanup
+/// A guard that holds the tracer provider, meter provider, and logger provider and ensures proper cleanup
 #[derive(Debug, Clone)]
 pub struct OtelGuard {
     tracer_provider: Option<SdkTracerProvider>,
     meter_provider: Option<SdkMeterProvider>,
+    logger_provider: Option<SdkLoggerProvider>,
 }
 
 impl OtelGuard {
-    /// Create a new guard with the given provider
+    /// Create a new guard with the given providers
     pub fn new(
         tracer_provider: Option<SdkTracerProvider>,
         meter_provider: Option<SdkMeterProvider>,
+        logger_provider: Option<SdkLoggerProvider>,
     ) -> Self {
         Self {
             tracer_provider,
             meter_provider,
+            logger_provider,
         }
     }
 
@@ -32,13 +37,22 @@ impl OtelGuard {
         self
     }
 
-    /// Manually shutdown the tracer provider
+    // Set the logger provider
+    pub fn with_logger_provider(mut self, logger_provider: SdkLoggerProvider) -> Self {
+        self.logger_provider = Some(logger_provider);
+        self
+    }
+
+    /// Manually shutdown all providers
     pub fn shutdown(mut self) -> Result<()> {
         if let Some(tracer_provider) = self.tracer_provider.take() {
             tracer_provider.shutdown()?;
         }
         if let Some(meter_provider) = self.meter_provider.take() {
             meter_provider.shutdown()?;
+        }
+        if let Some(logger_provider) = self.logger_provider.take() {
+            logger_provider.shutdown()?;
         }
         Ok(())
     }
@@ -54,6 +68,11 @@ impl Drop for OtelGuard {
         }
         if let Some(meter_provider) = self.meter_provider.take() {
             if let Err(err) = meter_provider.shutdown() {
+                eprintln!("{err:?}");
+            }
+        }
+        if let Some(logger_provider) = self.logger_provider.take() {
+            if let Err(err) = logger_provider.shutdown() {
                 eprintln!("{err:?}");
             }
         }
