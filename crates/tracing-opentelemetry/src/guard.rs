@@ -63,17 +63,17 @@ impl Drop for OtelGuard {
     fn drop(&mut self) {
         if let Some(tracer_provider) = self.tracer_provider.take() {
             if let Err(err) = tracer_provider.shutdown() {
-                eprintln!("{err:?}");
+                eprintln!("Failed to shutdown tracer provider: {err:?}");
             }
         }
         if let Some(meter_provider) = self.meter_provider.take() {
             if let Err(err) = meter_provider.shutdown() {
-                eprintln!("{err:?}");
+                eprintln!("Failed to shutdown meter provider: {err:?}");
             }
         }
         if let Some(logger_provider) = self.logger_provider.take() {
             if let Err(err) = logger_provider.shutdown() {
-                eprintln!("{err:?}");
+                eprintln!("Failed to shutdown logger provider: {err:?}");
             }
         }
     }
