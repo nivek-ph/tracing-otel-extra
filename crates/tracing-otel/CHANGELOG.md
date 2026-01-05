@@ -2,10 +2,11 @@
 
 ## [Unreleased]
 
+### 🐛 Bug Fixes
 
-## [0.32.0](https://github.com/iamnivekx/tracing-otel-extra/compare/tracing-otel-extra-v0.31.4...tracing-otel-extra-v0.32.0)
+- Change default environment variable prefix from `LOG_` to `LOG` to avoid double underscores in variable names (e.g., `LOG__SERVICE_NAME` → `LOG_SERVICE_NAME`)
 
-
+## [0.31.5](https://github.com/iamnivekx/tracing-otel-extra/compare/tracing-otel-extra-v0.31.4...tracing-otel-extra-v0.31.5)
 
 
 ### 🚜 Refactor

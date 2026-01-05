@@ -3,7 +3,7 @@
 ## [Unreleased]
 
 
-## [0.32.0](https://github.com/iamnivekx/tracing-otel-extra/compare/axum-otel-v0.31.4...axum-otel-v0.32.0)
+## [0.31.5](https://github.com/iamnivekx/tracing-otel-extra/compare/axum-otel-v0.31.4...axum-otel-v0.31.5)
 
 
 
