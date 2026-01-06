@@ -118,13 +118,17 @@ name = "axum-otel"
 version = "0.31.5"
 dependencies = [
  "axum",
+ "http-body-util",
  "opentelemetry 0.31.0",
+ "opentelemetry_sdk 0.31.0",
  "reqwest",
  "tokio",
  "tower",
  "tower-http",
  "tracing",
+ "tracing-opentelemetry 0.32.0",
  "tracing-otel-extra",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -1110,6 +1114,8 @@ dependencies = [
  "percent-encoding",
  "rand",
  "thiserror 2.0.17",
+ "tokio",
+ "tokio-stream",
 ]
 
 [[package]]

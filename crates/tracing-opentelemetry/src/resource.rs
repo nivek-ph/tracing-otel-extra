@@ -53,5 +53,10 @@ mod tests {
             resource.get(&opentelemetry::Key::new("env")),
             Some(opentelemetry::Value::String("test".into()))
         );
+
+        assert_eq!(
+            resource.get(&opentelemetry::Key::new("version")),
+            Some(opentelemetry::Value::String("1.0.0".into()))
+        );
     }
 }

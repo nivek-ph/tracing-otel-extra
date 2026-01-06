@@ -40,6 +40,7 @@ axum-otel = { path = "crates/axum-otel", version = "0.31.5" }
 config = { version = "0.14.0", default-features = false }
 dotenvy = { version = "0.15.7" }
 http = { version = "1.3.1" }
+http-body-util = { version = "0.1" }
 opentelemetry = { version = "0.31.0", default-features = false }
 opentelemetry-appender-tracing = { version = "0.31.0" }
 opentelemetry-http = { version = "0.31.0", default-features = false }
