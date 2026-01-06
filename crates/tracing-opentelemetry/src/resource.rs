@@ -28,3 +28,30 @@ pub fn get_resource(service_name: &str, attributes: &[KeyValue]) -> Resource {
         .with_attributes(attributes.to_vec())
         .build()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::get_resource;
+    use opentelemetry::KeyValue;
+
+    #[test]
+    fn test_get_resource() {
+        let service_name = "test-service";
+        let attributes = vec![
+            KeyValue::new("env", "test"),
+            KeyValue::new("version", "1.0.0"),
+        ];
+
+        let resource = get_resource(service_name, &attributes);
+
+        assert_eq!(
+            resource.get(&opentelemetry::Key::new("service.name")),
+            Some(opentelemetry::Value::String(service_name.into()))
+        );
+
+        assert_eq!(
+            resource.get(&opentelemetry::Key::new("env")),
+            Some(opentelemetry::Value::String("test".into()))
+        );
+    }
+}

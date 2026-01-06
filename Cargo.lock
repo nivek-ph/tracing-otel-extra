@@ -119,6 +119,9 @@ version = "0.31.5"
 dependencies = [
  "axum",
  "opentelemetry 0.31.0",
+ "reqwest",
+ "tokio",
+ "tower",
  "tower-http",
  "tracing",
  "tracing-otel-extra",
