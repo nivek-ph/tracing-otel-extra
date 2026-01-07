@@ -25,6 +25,17 @@ const OTEL_EXPORTER_OTLP_METRICS_PROTOCOL: &str = "OTEL_EXPORTER_OTLP_METRICS_PR
 const OTEL_EXPORTER_OTLP_LOGS_PROTOCOL: &str = "OTEL_EXPORTER_OTLP_LOGS_PROTOCOL";
 
 /// Build the span exporter based on the configured protocol.
+///
+/// # Environment
+///
+/// Resolution order:
+/// 1. `OTEL_EXPORTER_OTLP_TRACES_PROTOCOL`
+/// 2. `OTEL_EXPORTER_OTLP_PROTOCOL`
+/// 3. Falls back to gRPC
+///
+/// # Errors
+///
+/// Returns an error if the exporter cannot be built.
 fn build_span_exporter() -> Result<opentelemetry_otlp::SpanExporter> {
     build_exporter!(
         opentelemetry_otlp::SpanExporter::builder(),
@@ -34,6 +45,17 @@ fn build_span_exporter() -> Result<opentelemetry_otlp::SpanExporter> {
 }
 
 /// Build the metric exporter based on the configured protocol.
+///
+/// # Environment
+///
+/// Resolution order:
+/// 1. `OTEL_EXPORTER_OTLP_METRICS_PROTOCOL`
+/// 2. `OTEL_EXPORTER_OTLP_PROTOCOL`
+/// 3. Falls back to gRPC
+///
+/// # Errors
+///
+/// Returns an error if the exporter cannot be built.
 fn build_metric_exporter() -> Result<opentelemetry_otlp::MetricExporter> {
     build_exporter!(
         opentelemetry_otlp::MetricExporter::builder(),
@@ -44,6 +66,17 @@ fn build_metric_exporter() -> Result<opentelemetry_otlp::MetricExporter> {
 }
 
 /// Build the log exporter based on the configured protocol.
+///
+/// # Environment
+///
+/// Resolution order:
+/// 1. `OTEL_EXPORTER_OTLP_LOGS_PROTOCOL`
+/// 2. `OTEL_EXPORTER_OTLP_PROTOCOL`
+/// 3. Falls back to gRPC
+///
+/// # Errors
+///
+/// Returns an error if the exporter cannot be built.
 fn build_log_exporter() -> Result<opentelemetry_otlp::LogExporter> {
     build_exporter!(
         opentelemetry_otlp::LogExporter::builder(),
