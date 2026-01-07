@@ -118,4 +118,8 @@ async fn test_axum_otel_middleware() {
         Some("200".to_string()),
         "Expected http.status_code to be 200"
     );
+
+    provider
+        .shutdown()
+        .expect("Failed to shutdown tracer provider");
 }
