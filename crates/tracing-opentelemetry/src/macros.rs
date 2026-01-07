@@ -109,11 +109,170 @@ mod tests {
 
     #[test]
     fn test_parse_protocol() {
+        // Valid protocols - lowercase
         assert_eq!(parse_protocol("grpc"), Some(Protocol::Grpc));
-        assert_eq!(parse_protocol("GRPC"), Some(Protocol::Grpc));
         assert_eq!(parse_protocol("http/protobuf"), Some(Protocol::HttpBinary));
         assert_eq!(parse_protocol("http/proto"), Some(Protocol::HttpBinary));
         assert_eq!(parse_protocol("http/json"), Some(Protocol::HttpJson));
+
+        // Valid protocols - uppercase
+        assert_eq!(parse_protocol("GRPC"), Some(Protocol::Grpc));
+        assert_eq!(parse_protocol("HTTP/PROTOBUF"), Some(Protocol::HttpBinary));
+        assert_eq!(parse_protocol("HTTP/PROTO"), Some(Protocol::HttpBinary));
+        assert_eq!(parse_protocol("HTTP/JSON"), Some(Protocol::HttpJson));
+
+        // Valid protocols - mixed case
+        assert_eq!(parse_protocol("Grpc"), Some(Protocol::Grpc));
+        assert_eq!(parse_protocol("Http/Protobuf"), Some(Protocol::HttpBinary));
+        assert_eq!(parse_protocol("Http/Proto"), Some(Protocol::HttpBinary));
+        assert_eq!(parse_protocol("Http/Json"), Some(Protocol::HttpJson));
+
+        // Valid protocols - with whitespace
+        assert_eq!(parse_protocol(" grpc "), Some(Protocol::Grpc));
+        assert_eq!(
+            parse_protocol("  http/protobuf  "),
+            Some(Protocol::HttpBinary)
+        );
+        assert_eq!(parse_protocol("\thttp/proto\n"), Some(Protocol::HttpBinary));
+        assert_eq!(parse_protocol(" http/json "), Some(Protocol::HttpJson));
+
+        // Invalid protocols
         assert_eq!(parse_protocol("invalid"), None);
+        assert_eq!(parse_protocol(""), None);
+        assert_eq!(parse_protocol("http"), None);
+        assert_eq!(parse_protocol("grpc/http"), None);
+        assert_eq!(parse_protocol("json"), None);
+    }
+
+    #[test]
+    fn test_protocol_from_env() {
+        // Test with unset environment variable
+        assert_eq!(protocol_from_env("NONEXISTENT_VAR_12345"), None);
+
+        // Test with valid protocol values
+        unsafe {
+            std::env::set_var("TEST_PROTOCOL_GRPC", "grpc");
+        }
+        assert_eq!(
+            protocol_from_env("TEST_PROTOCOL_GRPC"),
+            Some(Protocol::Grpc)
+        );
+        unsafe {
+            std::env::remove_var("TEST_PROTOCOL_GRPC");
+        }
+
+        unsafe {
+            std::env::set_var("TEST_PROTOCOL_HTTP_BINARY", "http/protobuf");
+        }
+        assert_eq!(
+            protocol_from_env("TEST_PROTOCOL_HTTP_BINARY"),
+            Some(Protocol::HttpBinary)
+        );
+        unsafe {
+            std::env::remove_var("TEST_PROTOCOL_HTTP_BINARY");
+        }
+
+        unsafe {
+            std::env::set_var("TEST_PROTOCOL_HTTP_JSON", "http/json");
+        }
+        assert_eq!(
+            protocol_from_env("TEST_PROTOCOL_HTTP_JSON"),
+            Some(Protocol::HttpJson)
+        );
+        unsafe {
+            std::env::remove_var("TEST_PROTOCOL_HTTP_JSON");
+        }
+
+        // Test with invalid protocol value
+        unsafe {
+            std::env::set_var("TEST_PROTOCOL_INVALID", "invalid");
+        }
+        assert_eq!(protocol_from_env("TEST_PROTOCOL_INVALID"), None);
+        unsafe {
+            std::env::remove_var("TEST_PROTOCOL_INVALID");
+        }
+
+        // Test with whitespace (should be trimmed)
+        unsafe {
+            std::env::set_var("TEST_PROTOCOL_WHITESPACE", " grpc ");
+        }
+        assert_eq!(
+            protocol_from_env("TEST_PROTOCOL_WHITESPACE"),
+            Some(Protocol::Grpc)
+        );
+        unsafe {
+            std::env::remove_var("TEST_PROTOCOL_WHITESPACE");
+        }
+    }
+
+    #[test]
+    fn test_protocol_for_signal() {
+        // Test default fallback to gRPC when no env vars are set
+        // Clean up any existing env vars first
+        unsafe {
+            std::env::remove_var("TEST_SIGNAL_SPECIFIC");
+            std::env::remove_var(OTEL_EXPORTER_OTLP_PROTOCOL);
+        }
+        assert_eq!(protocol_for_signal("TEST_SIGNAL_SPECIFIC"), Protocol::Grpc);
+
+        // Test signal-specific override
+        unsafe {
+            std::env::set_var("TEST_SIGNAL_SPECIFIC", "http/json");
+        }
+        assert_eq!(
+            protocol_for_signal("TEST_SIGNAL_SPECIFIC"),
+            Protocol::HttpJson
+        );
+        unsafe {
+            std::env::remove_var("TEST_SIGNAL_SPECIFIC");
+        }
+
+        // Test global fallback when signal-specific is not set
+        unsafe {
+            std::env::set_var(OTEL_EXPORTER_OTLP_PROTOCOL, "http/protobuf");
+        }
+        assert_eq!(
+            protocol_for_signal("TEST_SIGNAL_SPECIFIC"),
+            Protocol::HttpBinary
+        );
+        unsafe {
+            std::env::remove_var(OTEL_EXPORTER_OTLP_PROTOCOL);
+        }
+
+        // Test signal-specific takes precedence over global
+        unsafe {
+            std::env::set_var("TEST_SIGNAL_SPECIFIC", "http/json");
+            std::env::set_var(OTEL_EXPORTER_OTLP_PROTOCOL, "http/protobuf");
+        }
+        assert_eq!(
+            protocol_for_signal("TEST_SIGNAL_SPECIFIC"),
+            Protocol::HttpJson
+        );
+        unsafe {
+            std::env::remove_var("TEST_SIGNAL_SPECIFIC");
+            std::env::remove_var(OTEL_EXPORTER_OTLP_PROTOCOL);
+        }
+
+        // Test invalid signal-specific falls back to global
+        unsafe {
+            std::env::set_var("TEST_SIGNAL_SPECIFIC", "invalid");
+            std::env::set_var(OTEL_EXPORTER_OTLP_PROTOCOL, "grpc");
+        }
+        assert_eq!(protocol_for_signal("TEST_SIGNAL_SPECIFIC"), Protocol::Grpc);
+        unsafe {
+            std::env::remove_var("TEST_SIGNAL_SPECIFIC");
+            std::env::remove_var(OTEL_EXPORTER_OTLP_PROTOCOL);
+        }
+
+        // Test invalid signal-specific and invalid global falls back to default
+        unsafe {
+            std::env::set_var("TEST_SIGNAL_SPECIFIC", "invalid");
+            std::env::set_var(OTEL_EXPORTER_OTLP_PROTOCOL, "also_invalid");
+        }
+        assert_eq!(protocol_for_signal("TEST_SIGNAL_SPECIFIC"), Protocol::Grpc);
+        unsafe {
+            std::env::remove_var("TEST_SIGNAL_SPECIFIC");
+            std::env::remove_var(OTEL_EXPORTER_OTLP_PROTOCOL);
+        }
     }
 }
