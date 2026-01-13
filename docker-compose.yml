@@ -8,7 +8,7 @@ services:
     command: ['run', '--server.http.listen-addr=0.0.0.0:12345', '--stability.level=public-preview', '/etc/alloy/config.alloy']
     restart: unless-stopped
     environment:
-      - LOKI_HOST=198.18.0.1:3100
+      - LOKI_HOST=host.docker.internal:3100
     labels:
       org.label-schema.group: 'tracing-otel-extra'
       source: 'docker'
