@@ -9,7 +9,7 @@ use tracing_otel_extra::dyn_event;
 ///
 /// This component adds the following attributes to the span:
 ///
-/// - `http.status_code`: The response status code
+/// - `http.response.status_code`: The response status code
 /// - `otel.status_code`: The OpenTelemetry status code (OK for successful responses)
 ///
 /// # Example
@@ -65,7 +65,7 @@ impl<B> OnResponse<B> for AxumOtelOnResponse {
         span: &tracing::Span,
     ) {
         let status = response.status().as_u16();
-        span.record("http.status_code", tracing::field::display(status));
+        span.record("http.response.status_code", tracing::field::display(status));
         span.record("otel.status_code", "OK");
 
         dyn_event!(

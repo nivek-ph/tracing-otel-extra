@@ -11,14 +11,34 @@ use opentelemetry_sdk::{
     Resource,
     trace::{InMemorySpanExporter, RandomIdGenerator, Sampler, SdkTracerProvider},
 };
+use std::sync::{Mutex, OnceLock};
 use tower::ServiceExt;
 use tower_http::trace::TraceLayer;
 use tracing::instrument;
-use tracing_subscriber::{Registry, layer::SubscriberExt, util::SubscriberInitExt};
+use tracing_subscriber::{Registry, layer::SubscriberExt};
+
+fn test_lock() -> &'static Mutex<()> {
+    static TEST_LOCK: OnceLock<Mutex<()>> = OnceLock::new();
+    TEST_LOCK.get_or_init(|| Mutex::new(()))
+}
 
 #[instrument]
 async fn hello() -> &'static str {
     "Hello, world!"
+}
+
+fn span_attr(span: &opentelemetry_sdk::trace::SpanData, key: &str) -> Option<String> {
+    span.attributes
+        .iter()
+        .find(|kv| kv.key.as_str() == key)
+        .map(|kv| kv.value.to_string())
+        .map(|value| {
+            value
+                .strip_prefix('"')
+                .and_then(|value| value.strip_suffix('"'))
+                .unwrap_or(&value)
+                .to_string()
+        })
 }
 
 fn app() -> Router<()> {
@@ -30,8 +50,10 @@ fn app() -> Router<()> {
     )
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "current_thread")]
 async fn test_axum_otel_middleware() {
+    let _test_guard = test_lock().lock().expect("test lock poisoned");
+
     // Set up in-memory exporter for testing
     let exporter = InMemorySpanExporter::default();
     let provider: SdkTracerProvider = SdkTracerProvider::builder()
@@ -46,10 +68,8 @@ async fn test_axum_otel_middleware() {
     // Set up tracing subscriber with OpenTelemetry layer
     let tracer = provider.tracer("axum-otel-test".to_string());
     let otel_layer = tracing_opentelemetry::OpenTelemetryLayer::new(tracer);
-    Registry::default()
-        .with(otel_layer)
-        .try_init()
-        .expect("Failed to initialize tracing subscriber");
+    let subscriber = Registry::default().with(otel_layer);
+    let _guard = tracing::subscriber::set_default(subscriber);
 
     let app = app();
 
@@ -57,7 +77,10 @@ async fn test_axum_otel_middleware() {
     let response = app
         .oneshot(
             Request::builder()
-                .uri("/")
+                .uri("/?foo=bar")
+                .header("host", "example.com")
+                .header("user-agent", "integration-test")
+                .header("x-forwarded-proto", "https")
                 .method(Method::GET)
                 .body(Body::empty())
                 .expect("Failed to build request"),
@@ -106,17 +129,142 @@ async fn test_axum_otel_middleware() {
         "Handler span should be a child of the request span"
     );
 
-    // Check http.status_code attribute
-    let status_code_attr = request_span
-        .attributes
+    assert_eq!(
+        span_attr(request_span, "http.host"),
+        Some("example.com".to_string()),
+        "Expected http.host to be example.com"
+    );
+    assert_eq!(
+        span_attr(request_span, "http.request.method"),
+        Some("GET".to_string()),
+        "Expected http.request.method to be GET"
+    );
+    assert_eq!(
+        span_attr(request_span, "http.user_agent"),
+        Some("integration-test".to_string()),
+        "Expected http.user_agent to be integration-test"
+    );
+    assert_eq!(
+        span_attr(request_span, "http.response.status_code"),
+        Some("200".to_string()),
+        "Expected http.response.status_code to be 200"
+    );
+    assert_eq!(
+        span_attr(request_span, "url.path"),
+        Some("/".to_string()),
+        "Expected url.path to be /"
+    );
+    assert_eq!(
+        span_attr(request_span, "url.scheme"),
+        Some("https".to_string()),
+        "Expected url.scheme to be https"
+    );
+    assert_eq!(
+        span_attr(request_span, "url.query"),
+        Some("foo=bar".to_string()),
+        "Expected url.query to be foo=bar"
+    );
+    assert_eq!(
+        span_attr(request_span, "network.protocol.name"),
+        Some("http".to_string()),
+        "Expected network.protocol.name to be http"
+    );
+    assert_eq!(
+        span_attr(request_span, "network.protocol.version"),
+        Some("1.1".to_string()),
+        "Expected network.protocol.version to be 1.1"
+    );
+    assert_eq!(
+        span_attr(request_span, "http.method"),
+        None,
+        "Expected deprecated http.method to be absent"
+    );
+    assert_eq!(
+        span_attr(request_span, "http.status_code"),
+        None,
+        "Expected deprecated http.status_code to be absent"
+    );
+    assert_eq!(
+        span_attr(request_span, "http.target"),
+        None,
+        "Expected deprecated http.target to be absent"
+    );
+
+    provider
+        .shutdown()
+        .expect("Failed to shutdown tracer provider");
+}
+
+#[tokio::test(flavor = "current_thread")]
+async fn test_axum_otel_omits_missing_optional_fields() {
+    let _test_guard = test_lock().lock().expect("test lock poisoned");
+
+    let exporter = InMemorySpanExporter::default();
+    let provider: SdkTracerProvider = SdkTracerProvider::builder()
+        .with_sampler(Sampler::AlwaysOn)
+        .with_id_generator(RandomIdGenerator::default())
+        .with_simple_exporter(exporter.clone())
+        .with_resource(Resource::builder().build())
+        .build();
+
+    global::set_tracer_provider(provider.clone());
+
+    let tracer = provider.tracer("axum-otel-test-optional".to_string());
+    let otel_layer = tracing_opentelemetry::OpenTelemetryLayer::new(tracer);
+    let subscriber = Registry::default().with(otel_layer);
+    let _guard = tracing::subscriber::set_default(subscriber);
+
+    let app = app();
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .uri("/")
+                .method(Method::GET)
+                .body(Body::empty())
+                .expect("Failed to build request"),
+        )
+        .await
+        .expect("Failed to send request");
+
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let _body = response
+        .into_body()
+        .collect()
+        .await
+        .expect("Failed to read body");
+
+    let _ = provider.force_flush();
+
+    let spans = exporter
+        .get_finished_spans()
+        .expect("Failed to get finished spans");
+
+    let request_span = spans
         .iter()
-        .find(|kv| kv.key.as_str() == "http.status_code")
-        .map(|kv| kv.value.to_string());
+        .find(|s| s.name == "GET" || s.name == "GET /")
+        .expect("Request span not found");
 
     assert_eq!(
-        status_code_attr,
-        Some("200".to_string()),
-        "Expected http.status_code to be 200"
+        span_attr(request_span, "http.host"),
+        None,
+        "Expected http.host to be omitted when missing"
+    );
+    assert_eq!(
+        span_attr(request_span, "http.user_agent"),
+        None,
+        "Expected http.user_agent to be omitted when missing"
+    );
+    assert_eq!(
+        span_attr(request_span, "url.query"),
+        None,
+        "Expected url.query to be omitted when missing"
+    );
+    assert_eq!(
+        span_attr(request_span, "url.scheme"),
+        None,
+        "Expected url.scheme to be omitted when missing"
     );
 
     provider
