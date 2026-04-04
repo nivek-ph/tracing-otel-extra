@@ -31,12 +31,11 @@ fn span_attr(span: &opentelemetry_sdk::trace::SpanData, key: &str) -> Option<Str
     span.attributes
         .iter()
         .find(|kv| kv.key.as_str() == key)
-        .map(|kv| kv.value.to_string())
-        .map(|value| {
-            value
-                .strip_prefix('"')
-                .and_then(|value| value.strip_suffix('"'))
-                .unwrap_or(&value)
+        .map(|kv| {
+            let s = kv.value.to_string();
+            s.strip_prefix('"')
+                .and_then(|unquoted| unquoted.strip_suffix('"'))
+                .unwrap_or(&s)
                 .to_string()
         })
 }
