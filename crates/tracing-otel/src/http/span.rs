@@ -1,4 +1,8 @@
 //! HTTP request span creation utilities.
+//!
+//! [`make_request_span`] sets attributes that match [OpenTelemetry HTTP server spans](https://opentelemetry.io/docs/specs/semconv/http/http-spans/)
+//! (for example `server.address`, `user_agent.original`, `url.path`, `url.scheme`, `network.protocol.*`).
+//! See the [`axum_otel` crate](https://docs.rs/axum-otel) documentation for a migration table from older attribute names.
 
 use crate::{
     dyn_span,

@@ -55,7 +55,7 @@ The goal of axum-otel is to **reduce boilerplate and decision-making** when sett
 * **Structured Logging** - Rich structured logging with customizable fields, making logs searchable and analyzable
 * **File Logging & Rotation** - Built-in file appender with automatic log rotation, perfect for production deployments
 * **Builder Pattern API** - Intuitive builder pattern for configuration, reducing boilerplate code
-* **HTTP Semantic Attributes** - Automatically captures comprehensive HTTP attributes (method, route, client_ip, host, user_agent, request_id, trace_id) following OpenTelemetry semantic conventions
+* **HTTP Semantic Attributes** - Request spans capture method, route, URL parts, protocol, `server.address`, `client.address` (with `ConnectInfo`), `user_agent.original`, `request_id`, and `trace_id`, aligned with [OpenTelemetry HTTP traces](https://opentelemetry.io/docs/specs/semconv/http/http-spans/)
 * **Metrics Collection** - Built-in HTTP metrics instrumentation with OTLP export support
 * **Environment Configuration** - Support for standard OpenTelemetry environment variables for flexible deployment configuration
 

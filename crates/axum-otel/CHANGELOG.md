@@ -2,16 +2,20 @@
 
 ## [Unreleased]
 
+### ⚠️ Breaking Changes
+
+- HTTP span attributes were renamed to align with [OpenTelemetry HTTP semantic conventions](https://opentelemetry.io/docs/specs/semconv/http/http-spans/): `http.host` → `server.address`, `http.user_agent` → `user_agent.original`, `http.client_ip` → `client.address` (when `[ConnectInfo](https://docs.rs/axum/latest/axum/extract/struct.ConnectInfo.html)` is present). Update dashboards, alerts, and sampling rules that referenced the old attribute keys.
+- `http.response.status_code` is recorded as an integer (OpenTelemetry `int`), not a string.
+
+### 📚 Documentation
+
+- Expand crate-level documentation with attribute migration and links to the OpenTelemetry HTTP spec.
 
 ## [0.31.5](https://github.com/iamnivekx/tracing-otel-extra/compare/axum-otel-v0.31.4...axum-otel-v0.31.5)
-
-
-
 
 ### 🚜 Refactor
 
 - Reorganize imports and simplify shutdown logic in tracing modules - ([0f95108](https://github.com/iamnivekx/tracing-otel-extra/commit/0f951082ae571380fef1c626855271d1ab74794a))
-
 
 ### ⚙️ Miscellaneous Tasks
 

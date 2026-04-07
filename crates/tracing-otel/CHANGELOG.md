@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### ⚠️ Breaking Changes
+
+- [`make_request_span`](https://docs.rs/tracing-otel-extra/latest/tracing_otel_extra/http/span/fn.make_request_span.html) emits the same OpenTelemetry-aligned HTTP attribute names as `axum-otel` (for example `server.address` and `user_agent.original` instead of `http.host` and `http.user_agent`). Update any code or tests that depend on the previous field names.
+
+### 📚 Documentation
+
+- Document HTTP span attributes in `http::span` and link to the OpenTelemetry HTTP spec and `axum-otel` migration notes; README mentions `make_request_span`.
+
 ### 🐛 Bug Fixes
 
 - Change default environment variable prefix from `LOG_` to `LOG` to avoid double underscores in variable names (e.g., `LOG__SERVICE_NAME` → `LOG_SERVICE_NAME`)

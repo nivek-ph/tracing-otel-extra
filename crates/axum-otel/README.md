@@ -9,6 +9,7 @@ A structured logging middleware for Axum web framework that integrates with Open
 - Request tracing
 - Metrics collection
 - Customizable span attributes
+- [OpenTelemetry HTTP semantic conventions](https://opentelemetry.io/docs/specs/semconv/http/http-spans/) for span attributes (see [crate docs](https://docs.rs/axum-otel) for migration from older field names)
 
 ## Installation
 
@@ -79,9 +80,9 @@ async fn main() {
 
 ## Examples
 
-Check out the [examples](https://github.com/iamnivekx/axum-otel/tree/main/examples) directory for more usage examples:
+Check out the [examples](https://github.com/iamnivekx/tracing-otel-extra/tree/main/examples) directory for more usage examples:
 
-- [Basic OpenTelemetry integration](https://github.com/iamnivekx/axum-otel/tree/main/examples/otel)
+- [Basic OpenTelemetry integration](https://github.com/iamnivekx/tracing-otel-extra/tree/main/examples/otel)
 
 ## Documentation
 

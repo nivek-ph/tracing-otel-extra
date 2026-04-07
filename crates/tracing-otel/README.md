@@ -15,6 +15,7 @@ A tracing and OpenTelemetry integration utility library for Rust applications, p
 - **Built-in Metrics Support** - Integrated OpenTelemetry metrics collection and export
 - **Environment Detection** - Automatic detection of operating system and process information
 - **OTLP Export** - Built-in OTLP protocol support, can directly export to Jaeger, OTEL Collector, etc.
+- **HTTP request spans** (with `http` + `span` features) - [`make_request_span`](https://docs.rs/tracing-otel-extra/latest/tracing_otel_extra/http/span/fn.make_request_span.html) uses OpenTelemetry-aligned attribute names; see the [`http::span`](https://docs.rs/tracing-otel-extra/latest/tracing_otel_extra/http/span/index.html) module and [`axum-otel`](https://docs.rs/axum-otel) for migration notes.
 
 ## Quick Start
 

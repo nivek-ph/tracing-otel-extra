@@ -56,7 +56,20 @@
 //! - [`AxumOtelOnResponse`] - Records response status and latency
 //! - [`AxumOtelOnFailure`] - Handles error cases and updates span status
 //!
-//! See the [examples](https://github.com/iamnivekx/axum-otel/tree/main/examples) directory for complete examples.
+//! ## HTTP span attributes
+//!
+//! Field names follow the [OpenTelemetry HTTP traces](https://opentelemetry.io/docs/specs/semconv/http/http-spans/)
+//! semantic conventions where applicable. If you upgrade from older releases, update queries and dashboards:
+//!
+//! | Previous attribute | Replacement |
+//! |--------------------|-------------|
+//! | `http.host` | `server.address` |
+//! | `http.user_agent` | `user_agent.original` |
+//! | `http.client_ip` | `client.address` |
+//!
+//! `http.response.status_code` is recorded as an **integer** when the response is sent ([`AxumOtelOnResponse`]).
+//!
+//! See the [examples](https://github.com/iamnivekx/tracing-otel-extra/tree/main/examples) directory for complete examples.
 //!
 mod make_span;
 mod on_failure;
