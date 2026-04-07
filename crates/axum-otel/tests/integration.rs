@@ -129,9 +129,9 @@ async fn test_axum_otel_middleware() {
     );
 
     assert_eq!(
-        span_attr(request_span, "http.host"),
+        span_attr(request_span, "server.address"),
         Some("example.com".to_string()),
-        "Expected http.host to be example.com"
+        "Expected server.address to be example.com"
     );
     assert_eq!(
         span_attr(request_span, "http.request.method"),
@@ -139,9 +139,9 @@ async fn test_axum_otel_middleware() {
         "Expected http.request.method to be GET"
     );
     assert_eq!(
-        span_attr(request_span, "http.user_agent"),
+        span_attr(request_span, "user_agent.original"),
         Some("integration-test".to_string()),
-        "Expected http.user_agent to be integration-test"
+        "Expected user_agent.original to be integration-test"
     );
     assert_eq!(
         span_attr(request_span, "http.response.status_code"),
@@ -187,6 +187,16 @@ async fn test_axum_otel_middleware() {
         span_attr(request_span, "http.target"),
         None,
         "Expected deprecated http.target to be absent"
+    );
+    assert_eq!(
+        span_attr(request_span, "http.host"),
+        None,
+        "Expected deprecated http.host to be absent"
+    );
+    assert_eq!(
+        span_attr(request_span, "http.user_agent"),
+        None,
+        "Expected deprecated http.user_agent to be absent"
     );
 
     provider
@@ -246,14 +256,14 @@ async fn test_axum_otel_omits_missing_optional_fields() {
         .expect("Request span not found");
 
     assert_eq!(
-        span_attr(request_span, "http.host"),
+        span_attr(request_span, "server.address"),
         None,
-        "Expected http.host to be omitted when missing"
+        "Expected server.address to be omitted when missing"
     );
     assert_eq!(
-        span_attr(request_span, "http.user_agent"),
+        span_attr(request_span, "user_agent.original"),
         None,
-        "Expected http.user_agent to be omitted when missing"
+        "Expected user_agent.original to be omitted when missing"
     );
     assert_eq!(
         span_attr(request_span, "url.query"),

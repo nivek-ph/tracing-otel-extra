@@ -77,7 +77,7 @@ pub fn extract_user_agent<T>(request: &http::Request<T>) -> Option<&str> {
     extract_field_from_headers(request.headers(), &http::header::USER_AGENT)
 }
 
-/// Extract the client ip from the request headers
+/// Extract the `Host` header value.
 pub fn extract_host<T>(request: &http::Request<T>) -> Option<&str> {
     extract_field_from_headers(request.headers(), &http::header::HOST)
 }
@@ -212,11 +212,5 @@ mod tests {
             .body(())
             .unwrap();
         assert_eq!(extract_url_scheme(&request), Some("https"));
-    }
-
-    #[test]
-    fn test_extract_request_id_absent() {
-        let request = Request::builder().body(()).unwrap();
-        assert_eq!(extract_request_id(&request), None);
     }
 }

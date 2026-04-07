@@ -13,11 +13,9 @@ pub fn make_request_span<B>(level: Level, request: &Request<B>) -> Span {
         level,
         "request",
         // HTTP fields
-        http.host = Empty,
         http.request.method = %fields::extract_http_method(request),
         http.route = Empty,
         http.response.status_code = Empty,
-        http.user_agent = Empty,
         network.protocol.name = fields::extract_network_protocol_name(request),
         network.protocol.version = Empty,
         // OpenTelemetry fields
@@ -27,17 +25,19 @@ pub fn make_request_span<B>(level: Level, request: &Request<B>) -> Span {
         otel.status_description = Empty,
         // Request tracking
         request_id = Empty,
+        server.address = Empty,
         trace_id = Empty,
         url.path = fields::extract_url_path(request),
         url.query = Empty,
-        url.scheme = Empty
+        url.scheme = Empty,
+        user_agent.original = Empty
     );
 
     if let Some(host) = fields::extract_host(request) {
-        span.record("http.host", host);
+        span.record("server.address", host);
     }
     if let Some(user_agent) = fields::extract_user_agent(request) {
-        span.record("http.user_agent", user_agent);
+        span.record("user_agent.original", user_agent);
     }
     if let Some(version) = fields::extract_network_protocol_version(request) {
         span.record("network.protocol.version", version);

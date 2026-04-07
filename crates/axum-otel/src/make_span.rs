@@ -20,14 +20,15 @@ use tracing_otel_extra::{
 ///
 /// - `http.request.method`: The HTTP method
 /// - `http.route`: The matched route
-/// - `http.client_ip`: The client's IP address
-/// - `http.host`: The Host header
+/// - `http.response.status_code`: The response status code (recorded when the response is sent)
+/// - `server.address`: The `Host` header (OpenTelemetry [`server.address`](https://opentelemetry.io/docs/specs/semconv/registry/attributes/server/))
+/// - `client.address`: The client IP when [`ConnectInfo`] is available (OpenTelemetry [`client.address`](https://opentelemetry.io/docs/specs/semconv/registry/attributes/client/))
 /// - `network.protocol.name`: The network protocol name
 /// - `network.protocol.version`: The network protocol version
 /// - `url.path`: The request path
 /// - `url.query`: The request query string
 /// - `url.scheme`: The request scheme
-/// - `http.user_agent`: The User-Agent header
+/// - `user_agent.original`: The `User-Agent` header
 /// - `request_id`: A unique request identifier
 /// - `trace_id`: The OpenTelemetry trace ID
 ///
@@ -78,10 +79,10 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
             .get::<MatchedPath>()
             .map(|p| p.as_str());
 
-        let client_ip = request
+        let peer = request
             .extensions()
             .get::<ConnectInfo<SocketAddr>>()
-            .map(|ConnectInfo(ip)| tracing::field::debug(ip));
+            .map(|ConnectInfo(addr)| *addr);
 
         let span_name = http_route.as_ref().map_or_else(
             || http_method.to_string(),
@@ -91,12 +92,10 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
         let span = dyn_span!(
             self.level,
             "request",
-            http.client_ip = Empty,
-            http.host = Empty,
+            client.address = Empty,
             http.request.method = %fields::extract_http_method(request),
             http.route = Empty,
             http.response.status_code = Empty,
-            http.user_agent = Empty,
             network.protocol.name = fields::extract_network_protocol_name(request),
             network.protocol.version = Empty,
             otel.name = span_name,
@@ -104,23 +103,22 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
             otel.status_code = Empty,
             otel.status_description = Empty,
             request_id = Empty,
+            server.address = Empty,
             trace_id = Empty,
             url.path = fields::extract_url_path(request),
             url.query = Empty,
-            url.scheme = Empty
+            url.scheme = Empty,
+            user_agent.original = Empty
         );
 
-        if let Some(client_ip) = client_ip {
-            span.record("http.client_ip", client_ip);
-        }
         if let Some(host) = fields::extract_host(request) {
-            span.record("http.host", host);
+            span.record("server.address", host);
         }
         if let Some(route) = http_route {
             span.record("http.route", route);
         }
         if let Some(user_agent) = fields::extract_user_agent(request) {
-            span.record("http.user_agent", user_agent);
+            span.record("user_agent.original", user_agent);
         }
         if let Some(version) = fields::extract_network_protocol_version(request) {
             span.record("network.protocol.version", version);
@@ -133,6 +131,9 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
         }
         if let Some(scheme) = fields::extract_url_scheme(request) {
             span.record("url.scheme", scheme);
+        }
+        if let Some(peer) = peer {
+            span.record("client.address", peer.ip().to_string());
         }
 
         context::set_otel_parent(request.headers(), &span);
