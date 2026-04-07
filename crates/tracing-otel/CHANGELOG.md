@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+
+## [0.31.7](https://github.com/iamnivekx/tracing-otel-extra/compare/tracing-otel-extra-v0.31.6...tracing-otel-extra-v0.31.7)
+
+
+
+
+### Fixed
+
+- Align HTTP spans with latest OpenTelemetry semantics ([#19](https://github.com/iamnivekx/tracing-otel-extra/pull/19)) - ([c5acf3f](https://github.com/iamnivekx/tracing-otel-extra/commit/c5acf3f3c0ad4584431733264acef245506a51bc))
+
+
 ### ⚠️ Breaking Changes
 
 - [`make_request_span`](https://docs.rs/tracing-otel-extra/latest/tracing_otel_extra/http/span/fn.make_request_span.html) emits the same OpenTelemetry-aligned HTTP attribute names as `axum-otel` (for example `server.address` and `user_agent.original` instead of `http.host` and `http.user_agent`). Update any code or tests that depend on the previous field names.

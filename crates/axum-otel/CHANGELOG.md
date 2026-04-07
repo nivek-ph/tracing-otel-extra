@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+
+## [0.31.7](https://github.com/iamnivekx/tracing-otel-extra/compare/axum-otel-v0.31.6...axum-otel-v0.31.7)
+
+
+
+
+### Fixed
+
+- Align HTTP spans with latest OpenTelemetry semantics ([#19](https://github.com/iamnivekx/tracing-otel-extra/pull/19)) - ([c5acf3f](https://github.com/iamnivekx/tracing-otel-extra/commit/c5acf3f3c0ad4584431733264acef245506a51bc))
+
+
 ### ⚠️ Breaking Changes
 
 - HTTP span attributes were renamed to align with [OpenTelemetry HTTP semantic conventions](https://opentelemetry.io/docs/specs/semconv/http/http-spans/): `http.host` → `server.address`, `http.user_agent` → `user_agent.original`, `http.client_ip` → `client.address` (when `[ConnectInfo](https://docs.rs/axum/latest/axum/extract/struct.ConnectInfo.html)` is present). Update dashboards, alerts, and sampling rules that referenced the old attribute keys.
