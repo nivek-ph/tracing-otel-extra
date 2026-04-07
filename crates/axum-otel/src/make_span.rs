@@ -133,7 +133,7 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
             span.record("url.scheme", scheme);
         }
         if let Some(peer) = peer {
-            span.record("client.address", peer.ip().to_string());
+            span.record("client.address", tracing::field::display(peer.ip()));
         }
 
         context::set_otel_parent(request.headers(), &span);
