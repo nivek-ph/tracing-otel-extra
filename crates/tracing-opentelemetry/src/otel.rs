@@ -6,7 +6,7 @@
 //! - Configuring resource attributes
 //! - Initializing tracer and meter providers
 use crate::macros::build_exporter;
-use anyhow::{Context, Result};
+use anyhow::Result;
 use opentelemetry::global;
 use opentelemetry_sdk::{
     Resource,
@@ -15,7 +15,7 @@ use opentelemetry_sdk::{
     propagation::TraceContextPropagator,
     trace::{RandomIdGenerator, Sampler, SdkTracerProvider},
 };
-use std::{env::var_os, time::Duration};
+use std::{env::var, time::Duration};
 
 /// Global OTLP endpoint environment variable.
 const OTEL_EXPORTER_OTLP_ENDPOINT: &str = "OTEL_EXPORTER_OTLP_ENDPOINT";
@@ -32,8 +32,42 @@ const OTEL_EXPORTER_OTLP_LOGS_PROTOCOL: &str = "OTEL_EXPORTER_OTLP_LOGS_PROTOCOL
 /// Environment variable for signal-specific logs endpoint override.
 const OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: &str = "OTEL_EXPORTER_OTLP_LOGS_ENDPOINT";
 
+/// Check whether an OTLP exporter should be enabled for a signal.
+///
+/// A signal-specific endpoint enables only that signal, while
+/// `OTEL_EXPORTER_OTLP_ENDPOINT` enables all signals. Empty or whitespace-only
+/// endpoint values are treated as unset.
+///
+/// # Arguments
+///
+/// * `endpoint_env` - The signal-specific endpoint environment variable to
+///   check.
+///
+/// # Returns
+///
+/// `true` if either the signal-specific endpoint or the global OTLP endpoint is
+/// configured with a non-empty value.
 fn exporter_enabled(endpoint_env: &str) -> bool {
-    var_os(endpoint_env).is_some() || var_os(OTEL_EXPORTER_OTLP_ENDPOINT).is_some()
+    endpoint_configured(endpoint_env) || endpoint_configured(OTEL_EXPORTER_OTLP_ENDPOINT)
+}
+
+/// Check whether an endpoint environment variable has a usable value.
+///
+/// Empty or whitespace-only values are treated as unset so templated
+/// deployments can leave endpoint variables empty without accidentally enabling
+/// OTLP exporters.
+///
+/// # Arguments
+///
+/// * `endpoint_env` - The endpoint environment variable to check.
+///
+/// # Returns
+///
+/// `true` if the environment variable exists and contains a non-empty value.
+fn endpoint_configured(endpoint_env: &str) -> bool {
+    var(endpoint_env)
+        .ok()
+        .is_some_and(|value| !value.trim().is_empty())
 }
 
 /// Build the span exporter based on the configured protocol.
@@ -107,7 +141,8 @@ fn build_log_exporter() -> Result<opentelemetry_otlp::LogExporter> {
 /// # Errors
 ///
 /// Returns an error if the span exporter cannot be built. When no OTLP endpoint
-/// is configured, the provider is still initialized without an exporter.
+/// is configured, or the endpoint env var is empty, the provider is still
+/// initialized without an exporter.
 ///
 /// # Examples
 ///
@@ -133,7 +168,7 @@ pub fn init_tracer_provider(resource: &Resource, sample_ratio: f64) -> Result<Sd
         .with_resource(resource.clone());
 
     let tracer_provider = if exporter_enabled(OTEL_EXPORTER_OTLP_TRACES_ENDPOINT) {
-        let exporter = build_span_exporter().context("Failed to build OTLP span exporter")?;
+        let exporter = build_span_exporter()?;
         builder.with_batch_exporter(exporter).build()
     } else {
         builder.build()
@@ -153,8 +188,9 @@ pub fn init_tracer_provider(resource: &Resource, sample_ratio: f64) -> Result<Sd
 ///
 /// # Errors
 ///
-/// Returns an error if the metric exporter cannot be built. When no OTLP endpoint
-/// is configured, the provider is still initialized without a periodic exporter.
+/// Returns an error if the metric exporter cannot be built. When no OTLP
+/// endpoint is configured, or the endpoint env var is empty, the provider is
+/// still initialized without a periodic exporter.
 ///
 /// # Examples
 ///
@@ -176,7 +212,7 @@ pub fn init_meter_provider(
     let builder = MeterProviderBuilder::default().with_resource(resource.clone());
 
     let meter_provider = if exporter_enabled(OTEL_EXPORTER_OTLP_METRICS_ENDPOINT) {
-        let exporter = build_metric_exporter().context("Failed to build OTLP metric exporter")?;
+        let exporter = build_metric_exporter()?;
         let reader = PeriodicReader::builder(exporter)
             .with_interval(Duration::from_secs(metrics_interval_secs))
             .build();
@@ -200,7 +236,8 @@ pub fn init_meter_provider(
 /// # Errors
 ///
 /// Returns an error if the log exporter cannot be built. When no OTLP endpoint
-/// is configured, the provider is still initialized without an exporter.
+/// is configured, or the endpoint env var is empty, the provider is still
+/// initialized without an exporter.
 ///
 /// # Examples
 ///
@@ -219,7 +256,7 @@ pub fn init_logger_provider(resource: &Resource) -> Result<SdkLoggerProvider> {
     let builder = SdkLoggerProvider::builder().with_resource(resource.clone());
 
     let logger_provider = if exporter_enabled(OTEL_EXPORTER_OTLP_LOGS_ENDPOINT) {
-        let exporter = build_log_exporter().context("Failed to build OTLP log exporter")?;
+        let exporter = build_log_exporter()?;
         builder.with_batch_exporter(exporter).build()
     } else {
         builder.build()
@@ -257,6 +294,22 @@ mod tests {
         assert!(!exporter_enabled(OTEL_EXPORTER_OTLP_TRACES_ENDPOINT));
         assert!(!exporter_enabled(OTEL_EXPORTER_OTLP_METRICS_ENDPOINT));
         assert!(!exporter_enabled(OTEL_EXPORTER_OTLP_LOGS_ENDPOINT));
+    }
+
+    #[test]
+    fn exporter_is_disabled_with_empty_endpoint() {
+        let _guard = ENV_LOCK
+            .lock()
+            .expect("environment lock should not be poisoned");
+        clear_endpoint_envs();
+        unsafe {
+            std::env::set_var(OTEL_EXPORTER_OTLP_ENDPOINT, " ");
+            std::env::set_var(OTEL_EXPORTER_OTLP_TRACES_ENDPOINT, "");
+        }
+
+        assert!(!exporter_enabled(OTEL_EXPORTER_OTLP_TRACES_ENDPOINT));
+
+        clear_endpoint_envs();
     }
 
     #[test]

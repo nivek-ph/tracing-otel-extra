@@ -17,7 +17,7 @@ This crate provides enhanced OpenTelemetry integration for tracing applications.
 This crate respects the standard OpenTelemetry protocol environment variables:
 
 ```bash
-# No OTLP endpoint configured:
+# No OTLP endpoint configured, or configured as an empty string:
 # providers are initialized locally, trace IDs are still created, and nothing is exported.
 #
 # Enable OTLP export for all signals:
@@ -37,7 +37,7 @@ export OTEL_EXPORTER_OTLP_LOGS_PROTOCOL=grpc
 
 Supported values: `grpc`, `http/protobuf` (or `http/proto`), `http/json`.
 
-Default behavior: when no endpoint env vars are set, traces, metrics, and logs are local-only and do not attempt to connect to `localhost:4317`. When an endpoint is configured but no protocol env vars are set, traces, metrics, and logs all use `grpc`.
+Default behavior: when no endpoint env vars are set, or endpoint env vars are empty, traces, metrics, and logs are local-only and do not attempt to connect to `localhost:4317`. When an endpoint is configured but no protocol env vars are set, traces, metrics, and logs all use `grpc`.
 
 ## Installation
 

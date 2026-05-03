@@ -113,9 +113,10 @@ This library supports standard OpenTelemetry environment variables:
 
 ```bash
 # OTLP export endpoint
-# If no OTLP endpoint is configured, tracing and metrics providers are still
-# initialized locally so request spans can produce trace IDs, but nothing is
-# exported and no connection to localhost:4317 is attempted.
+# If no OTLP endpoint is configured, or it is configured as an empty string,
+# tracing and metrics providers are still initialized locally so request spans
+# can produce trace IDs, but nothing is exported and no connection to
+# localhost:4317 is attempted.
 #
 export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 export OTEL_EXPORTER_OTLP_PROTOCOL=grpc
