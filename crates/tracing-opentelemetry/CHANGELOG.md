@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### 🐛 Bug Fixes
+
+- Initialize local OpenTelemetry providers without OTLP exporters when no endpoint is configured, avoiding default localhost:4317 connection attempts.
 
 ## [0.31.5](https://github.com/iamnivekx/tracing-otel-extra/compare/tracing-opentelemetry-extra-v0.31.4...tracing-opentelemetry-extra-v0.31.5)
 

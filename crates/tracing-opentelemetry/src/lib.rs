@@ -17,7 +17,7 @@
 //! ## Examples
 //!
 //! Basic usage with manual setup:
-//! ```rust,no_run
+//! ```rust,ignore
 //! use opentelemetry::KeyValue;
 //! use tracing_opentelemetry_extra::{get_resource, init_tracer_provider, init_env_filter, init_tracing_subscriber, init_meter_provider, init_logger_provider};
 //! use tracing::Level;

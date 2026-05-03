@@ -241,6 +241,10 @@ curl -X POST http://localhost:8081/users \
 
 ```bash
 # OTLP export configuration
+# If no OTLP endpoint is configured, providers are initialized locally so
+# spans can still produce trace IDs, but nothing is exported and no connection
+# to localhost:4317 is attempted.
+#
 export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 export OTEL_EXPORTER_OTLP_PROTOCOL=grpc
 

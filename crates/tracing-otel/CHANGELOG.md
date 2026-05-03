@@ -4,6 +4,8 @@
 
 ### 🐛 Bug Fixes
 
+- Allow logger initialization without an OTLP endpoint by using local OpenTelemetry providers with no exporters.
+
 - Change default environment variable prefix from `LOG_` to `LOG` to avoid double underscores in variable names (e.g., `LOG__SERVICE_NAME` → `LOG_SERVICE_NAME`)
 
 ## [0.31.5](https://github.com/iamnivekx/tracing-otel-extra/compare/tracing-otel-extra-v0.31.4...tracing-otel-extra-v0.31.5)
