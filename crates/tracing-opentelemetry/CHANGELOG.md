@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+
+## [0.31.8](https://github.com/nivek-ph/tracing-otel-extra/compare/tracing-opentelemetry-extra-v0.31.7...tracing-opentelemetry-extra-v0.31.8)
+
+
+
+
+### Fixed
+
+
+- *(opentelemetry)* Skip OTLP exporters when no endpoint is configured ([#21](https://github.com/nivek-ph/tracing-otel-extra/pull/21)) - ([4e614fe](https://github.com/nivek-ph/tracing-otel-extra/commit/4e614fe45568da3682ce2e4db4eb32a7317b3dd8))
+
 ### 🐛 Bug Fixes
 
 - Initialize local OpenTelemetry providers without OTLP exporters when no endpoint is configured or endpoint env vars are empty, avoiding default localhost:4317 connection attempts.

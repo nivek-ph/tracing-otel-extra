@@ -3,6 +3,17 @@
 ## [Unreleased]
 
 
+## [0.31.8](https://github.com/nivek-ph/tracing-otel-extra/compare/tracing-otel-extra-v0.31.7...tracing-otel-extra-v0.31.8)
+
+
+
+
+### Fixed
+
+
+- *(opentelemetry)* Skip OTLP exporters when no endpoint is configured ([#21](https://github.com/nivek-ph/tracing-otel-extra/pull/21)) - ([4e614fe](https://github.com/nivek-ph/tracing-otel-extra/commit/4e614fe45568da3682ce2e4db4eb32a7317b3dd8))
+
+
 ## [0.31.7](https://github.com/iamnivekx/tracing-otel-extra/compare/tracing-otel-extra-v0.31.6...tracing-otel-extra-v0.31.7)
 
 
