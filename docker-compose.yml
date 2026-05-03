@@ -16,7 +16,7 @@ services:
 
   # axum-otel-demo is a demo application that uses the tracing-otel-extra crate
   axum-otel-demo:
-    image: ghcr.io/iamnivekx/tracing-otel-extra:main-78cf8fd
+    image: ghcr.io/nivek-ph/tracing-otel-extra:main-78cf8fd
     container_name: axum-otel-demo
     ports:
       - 8080:8080
@@ -32,7 +32,7 @@ services:
       tag: 'tracing-otel-extra'
 
   articles-service:
-    image: ghcr.io/iamnivekx/tracing-otel-extra:main-78cf8fd
+    image: ghcr.io/nivek-ph/tracing-otel-extra:main-78cf8fd
     container_name: articles-service
     command: articles-service
     ports:
@@ -45,7 +45,7 @@ services:
       - USERS_SERVICE_URL=http://users-service:8081
 
   users-service:
-    image: ghcr.io/iamnivekx/tracing-otel-extra:main-78cf8fd
+    image: ghcr.io/nivek-ph/tracing-otel-extra:main-78cf8fd
     container_name: users-service
     ports:
       - 8081:8081

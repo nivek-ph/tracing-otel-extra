@@ -80,9 +80,9 @@ async fn main() {
 
 ## Examples
 
-Check out the [examples](https://github.com/iamnivekx/tracing-otel-extra/tree/main/examples) directory for more usage examples:
+Check out the [examples](https://github.com/nivek-ph/tracing-otel-extra/tree/main/examples) directory for more usage examples:
 
-- [Basic OpenTelemetry integration](https://github.com/iamnivekx/tracing-otel-extra/tree/main/examples/otel)
+- [Basic OpenTelemetry integration](https://github.com/nivek-ph/tracing-otel-extra/tree/main/examples/otel)
 
 ## Documentation
 

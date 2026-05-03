@@ -49,20 +49,20 @@ The `docker-compose.yml` includes the following services:
 - **Configuration**: Uses `alloy/config.alloy` for log collection and processing
 
 #### 2. Users Service
-- **Image**: `ghcr.io/iamnivekx/tracing-otel-extra:main-78cf8fd`
+- **Image**: `ghcr.io/nivek-ph/tracing-otel-extra:main-78cf8fd`
 - **Port**: 8081
 - **Environment**: Uses `users.env` configuration
 - **Logs**: Mounted to `./logs/users`
 
 #### 3. Articles Service  
-- **Image**: `ghcr.io/iamnivekx/tracing-otel-extra:main-78cf8fd`
+- **Image**: `ghcr.io/nivek-ph/tracing-otel-extra:main-78cf8fd`
 - **Port**: 8082
 - **Environment**: Uses `articles.env` configuration
 - **Logs**: Mounted to `./logs/articles`
 - **Dependencies**: Communicates with users-service
 
 #### 4. Axum OTEL Demo
-- **Image**: `ghcr.io/iamnivekx/tracing-otel-extra:main-78cf8fd`
+- **Image**: `ghcr.io/nivek-ph/tracing-otel-extra:main-78cf8fd`
 - **Port**: 8080
 - **Environment**: Uses `demo.env` configuration
 - **Logs**: Mounted to `./logs/demo`
@@ -188,7 +188,7 @@ To complete the observability stack, you need to run:
 #### Loki + Tempo Stack
 ```bash
 # Clone and setup dockotlp project
-git clone https://github.com/iamnivekx/dockotlp
+git clone https://github.com/nivek-ph/dockotlp
 cd dockotlp
 
 # Start Loki + Tempo services

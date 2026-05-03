@@ -261,13 +261,13 @@ All observability backends use the standard OTLP (OpenTelemetry Protocol) for da
 
 #### 1: dockotlp (Self-Hosted Grafana Stack)
 
-[dockotlp](https://github.com/iamnivekx/dockotlp) provides a complete self-hosted observability stack with Grafana, Prometheus, Loki, Tempo, OpenTelemetry Collector, and more.
+[dockotlp](https://github.com/nivek-ph/dockotlp) provides a complete self-hosted observability stack with Grafana, Prometheus, Loki, Tempo, OpenTelemetry Collector, and more.
 
 Perfect for self-hosted deployments where you want full control over your observability infrastructure.
 
 **Quick Start:**
 
-Follow the [dockotlp Quick Start guide](https://github.com/iamnivekx/dockotlp?tab=readme-ov-file#quick-start) to set up the stack.
+Follow the [dockotlp Quick Start guide](https://github.com/nivek-ph/dockotlp?tab=readme-ov-file#quick-start) to set up the stack.
 
 **Configure your application:**
 
@@ -394,7 +394,7 @@ We welcome contributions! Please see our contributing guidelines:
 
 ```bash
 # Clone the repository
-git clone https://github.com/iamnivekx/tracing-otel-extra.git
+git clone https://github.com/nivek-ph/tracing-otel-extra.git
 cd tracing-otel-extra
 
 # Run tests
@@ -417,7 +417,7 @@ at your option.
 
 - [Documentation](https://docs.rs/tracing-otel-extra/)
 - [Crates.io](https://crates.io/crates/tracing-otel-extra)
-- [GitHub Repository](https://github.com/iamnivekx/tracing-otel-extra)
+- [GitHub Repository](https://github.com/nivek-ph/tracing-otel-extra)
 - [OpenTelemetry](https://opentelemetry.io/)
 - [Axum Framework](https://github.com/tokio-rs/axum)
-- [dockotlp](https://github.com/iamnivekx/dockotlp)
+- [dockotlp](https://github.com/nivek-ph/dockotlp)

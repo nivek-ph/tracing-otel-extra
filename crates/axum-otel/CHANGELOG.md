@@ -3,14 +3,14 @@
 ## [Unreleased]
 
 
-## [0.31.7](https://github.com/iamnivekx/tracing-otel-extra/compare/axum-otel-v0.31.6...axum-otel-v0.31.7)
+## [0.31.7](https://github.com/nivek-ph/tracing-otel-extra/compare/axum-otel-v0.31.6...axum-otel-v0.31.7)
 
 
 
 
 ### Fixed
 
-- Align HTTP spans with latest OpenTelemetry semantics ([#19](https://github.com/iamnivekx/tracing-otel-extra/pull/19)) - ([c5acf3f](https://github.com/iamnivekx/tracing-otel-extra/commit/c5acf3f3c0ad4584431733264acef245506a51bc))
+- Align HTTP spans with latest OpenTelemetry semantics ([#19](https://github.com/nivek-ph/tracing-otel-extra/pull/19)) - ([c5acf3f](https://github.com/nivek-ph/tracing-otel-extra/commit/c5acf3f3c0ad4584431733264acef245506a51bc))
 
 
 ### ⚠️ Breaking Changes
@@ -22,15 +22,15 @@
 
 - Expand crate-level documentation with attribute migration and links to the OpenTelemetry HTTP spec.
 
-## [0.31.5](https://github.com/iamnivekx/tracing-otel-extra/compare/axum-otel-v0.31.4...axum-otel-v0.31.5)
+## [0.31.5](https://github.com/nivek-ph/tracing-otel-extra/compare/axum-otel-v0.31.4...axum-otel-v0.31.5)
 
 ### 🚜 Refactor
 
-- Reorganize imports and simplify shutdown logic in tracing modules - ([0f95108](https://github.com/iamnivekx/tracing-otel-extra/commit/0f951082ae571380fef1c626855271d1ab74794a))
+- Reorganize imports and simplify shutdown logic in tracing modules - ([0f95108](https://github.com/nivek-ph/tracing-otel-extra/commit/0f951082ae571380fef1c626855271d1ab74794a))
 
 ### ⚙️ Miscellaneous Tasks
 
-- Update workspace dependencies and enhance CI configuration - ([244742d](https://github.com/iamnivekx/tracing-otel-extra/commit/244742d220816d3750abfd67175be04bacd057da))
+- Update workspace dependencies and enhance CI configuration - ([244742d](https://github.com/nivek-ph/tracing-otel-extra/commit/244742d220816d3750abfd67175be04bacd057da))
 
 # Changelog
 

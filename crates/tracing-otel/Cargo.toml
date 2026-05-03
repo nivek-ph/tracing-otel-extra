@@ -7,8 +7,8 @@ license.workspace = true
 categories.workspace = true
 description = "Bootstrap utilities for tracing and OpenTelemetry integration."
 documentation = "https://docs.rs/tracing-otel-extra"
-homepage = "https://github.com/iamnivekx/tracing-otel-extra/tree/main/crates/tracing-otel"
-repository = "https://github.com/iamnivekx/tracing-otel-extra/tree/main/crates/tracing-otel"
+homepage = "https://github.com/nivek-ph/tracing-otel-extra/tree/main/crates/tracing-otel"
+repository = "https://github.com/nivek-ph/tracing-otel-extra/tree/main/crates/tracing-otel"
 readme = "README.md"
 keywords = ["tracing", "opentelemetry", "logging"]
 
