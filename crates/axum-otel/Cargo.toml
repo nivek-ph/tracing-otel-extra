@@ -25,7 +25,6 @@ tracing-otel-extra = { workspace = true, features = [
 [dev-dependencies]
 http-body-util = { workspace = true }
 opentelemetry_sdk = { workspace = true, features = ["testing"] }
-reqwest = { workspace = true }
 tokio = { workspace = true }
 tower = { workspace = true }
 tracing-opentelemetry = { workspace = true }

@@ -143,7 +143,6 @@ dependencies = [
  "http-body-util",
  "opentelemetry",
  "opentelemetry_sdk",
- "reqwest 0.13.4",
  "tokio",
  "tower",
  "tower-http",
