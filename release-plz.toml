@@ -1,5 +1,7 @@
 [workspace]
 features_always_increment_minor = true
+release_always = false
+release_commits = "^release[(:]"
 
 [changelog]
 protect_breaking_commits = true
