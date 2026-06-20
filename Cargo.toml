@@ -11,7 +11,7 @@ resolver = "2"
 
 [workspace.package]
 rust-version = "1.92.0"
-version = "0.31.9"
+version = "0.32.0"
 authors = ["nivek <h49987180@gmail.com>"]
 edition = "2024"
 license = "MIT/Apache-2.0"
@@ -33,9 +33,9 @@ categories = ["asynchronous"]
 
 [workspace.dependencies]
 # workspace crates
-axum-otel = { path = "crates/axum-otel", version = "0.31.9" }
-tracing-opentelemetry-extra = { path = "crates/tracing-opentelemetry", version = "0.31.9" }
-tracing-otel-extra = { path = "crates/tracing-otel", version = "0.31.9" }
+axum-otel = { path = "crates/axum-otel", version = "0.32.0" }
+tracing-opentelemetry-extra = { path = "crates/tracing-opentelemetry", version = "0.32.0" }
+tracing-otel-extra = { path = "crates/tracing-otel", version = "0.32.0" }
 
 # external crates
 anyhow = "1.0"
