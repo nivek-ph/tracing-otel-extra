@@ -36,6 +36,20 @@ axum-otel
             └── tracing-opentelemetry-extra (tracing-opentelemetry)
 ```
 
+### Crate Boundaries
+
+| Crate | Responsibility |
+| ----- | -------------- |
+| `tracing-opentelemetry-extra` | OpenTelemetry provider/subscriber bootstrap (`OtelGuard`, OTLP setup) |
+| `tracing-otel-extra` | Shared HTTP tracing utilities (`fields`, `context`, `span`, `macros`) and the opinionated `Logger` facade |
+| `axum-otel` | Axum/Tower HTTP middleware (`AxumOtelSpanCreator`, `AxumOtelOnResponse`, `AxumOtelOnFailure`) |
+
+- Applications that only need Axum middleware should depend on `axum-otel`.
+- Applications that only need provider-level OpenTelemetry setup can use `tracing-opentelemetry-extra`.
+- Applications that want the full logging/bootstrap facade should use `tracing-otel-extra` with `logger` or `env`.
+
+Workspace `[workspace.dependencies]` entries must not enable crate features implicitly. Each member crate must declare the `tracing-otel-extra` features its source code actually uses (for example, `axum-otel` enables `context`, `fields`, and `macros`).
+
 ## Coding Conventions
 
 ### Rust Edition & Toolchain
@@ -79,20 +93,20 @@ axum-otel
 
 ### Feature Flags
 
-The `tracing-otel-extra` crate uses feature flags extensively:
+`tracing-otel-extra` has no default features:
 
-| Feature   | Description                      |
-| --------- | -------------------------------- |
-| `otel`    | OpenTelemetry integration        |
-| `logger`  | Basic logging functionality      |
-| `env`     | Environment-based configuration  |
-| `context` | Trace context utilities          |
-| `fields`  | Common tracing fields/attributes |
-| `http`    | HTTP request/response tracing    |
-| `span`    | Span creation utilities          |
-| `macros`  | Tracing macros                   |
+| Feature   | Description                      | Depends on |
+| --------- | -------------------------------- | ---------- |
+| `fields`  | HTTP field extraction helpers    | —          |
+| `macros`  | Runtime-configurable `dyn_span!` / `dyn_event!` macros | — |
+| `http`    | HTTP context propagation (no tracing bridge) | `fields` |
+| `context` | Trace context utilities (`set_otel_parent`, etc.) | `http` |
+| `span`    | HTTP span creation utilities     | `context`, `macros` |
+| `otel`    | Re-exports `tracing-opentelemetry-extra` | — |
+| `logger`  | Opinionated logging/bootstrap facade | `otel` |
+| `env`     | Environment-based `Logger` configuration | `logger` |
 
-When adding new functionality, consider whether it should be gated behind a feature flag.
+`axum-otel` uses `context`, `fields`, `macros`; examples use `env`.
 
 ## Key Patterns
 
@@ -136,7 +150,7 @@ Use the `dyn_span!` macro for runtime-configurable log levels:
 let span = dyn_span!(
     self.level,
     "request",
-    http.method = ?method,
+    http.request.method = %method,
     http.route = route,
     trace_id = Empty
 );
@@ -200,15 +214,15 @@ mod tests {
 
 #### Adding a new HTTP header extraction
 
-1. Add the field constant to `crates/tracing-otel/src/trace/fields.rs`
+1. Add the field constant to `crates/tracing-otel/src/http/fields.rs`
 2. Implement extraction function following existing patterns
 3. Use in span creation via `AxumOtelSpanCreator`
 
 #### Adding new log format support
 
-1. Extend `LogFormat` enum in `crates/tracing-otel/src/logs/logger.rs`
-2. Implement the format layer in `init_subscriber_*` functions
-3. Add environment variable mapping if using `env` feature
+1. Extend `LogFormat` enum in `crates/tracing-otel/src/logger/config.rs`
+2. Implement the format layer in `crates/tracing-otel/src/logger/subscriber.rs`
+3. Add environment variable mapping in `crates/tracing-otel/src/logger/env.rs` if using `env` feature
 
 #### Modifying span attributes
 
@@ -230,10 +244,15 @@ mod tests {
 | `tracing-opentelemetry` (0.32) | Bridge between tracing and OTel |
 | `axum` (0.8)                   | Web framework                   |
 | `tower-http` (0.6)             | HTTP middleware utilities       |
+| `reqwest` (0.13, examples)     | HTTP client in microservices demo |
+| `reqwest-middleware` (0.5, examples) | Middleware stack for outbound HTTP |
+| `reqwest-retry` (0.9, examples) | Retry middleware for outbound HTTP |
+| `reqwest-tracing` (0.7, examples) | Distributed tracing for outbound HTTP |
 
 ### Version Compatibility Notes
 
-- `reqwest-tracing` doesn't yet support opentelemetry 0.31; using `opentelemetry_0_30` feature for backward compatibility
+- Examples use `reqwest-tracing` 0.7 with the `opentelemetry_0_31` feature, aligned with workspace OpenTelemetry 0.31.
+- `opentelemetry-otlp` still depends on `reqwest` 0.12 internally; the workspace may resolve both 0.12 and 0.13 until OTLP upgrades.
 - Always check compatibility when upgrading OpenTelemetry crates as they often have breaking changes
 
 ## Environment Variables

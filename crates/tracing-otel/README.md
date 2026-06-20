@@ -17,6 +17,16 @@ A tracing and OpenTelemetry integration utility library for Rust applications, p
 - **OTLP Export** - Built-in OTLP protocol support, can directly export to Jaeger, OTEL Collector, etc.
 - **HTTP request spans** (with `http` + `span` features) - [`make_request_span`](https://docs.rs/tracing-otel-extra/latest/tracing_otel_extra/http/span/fn.make_request_span.html) uses OpenTelemetry-aligned attribute names; see the [`http::span`](https://docs.rs/tracing-otel-extra/latest/tracing_otel_extra/http/span/index.html) module and [`axum-otel`](https://docs.rs/axum-otel) for migration notes.
 
+## Crate Scope
+
+`tracing-otel-extra` contains shared tracing utilities:
+
+- `fields`, `http`, `context`, and `span` for HTTP tracing helpers.
+- `macros` for runtime-configurable tracing macros.
+- `logger` and `env` for opinionated application bootstrap.
+
+The `logger` feature intentionally initializes tracing, metrics, optional OpenTelemetry logs, console output, and optional file output. Applications that only need Axum middleware should depend on `axum-otel`; applications that only need provider-level OpenTelemetry setup can use `tracing-opentelemetry-extra`.
+
 ## Quick Start
 
 Add the dependency to your `Cargo.toml`:

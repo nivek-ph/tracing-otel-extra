@@ -9,8 +9,6 @@
     unused_qualifications
 )]
 #![doc(html_root_url = "https://docs.rs/axum-otel/latest")]
-#![macro_use]
-#![allow(unused_imports)]
 
 //! OpenTelemetry tracing for axum based on tower-http.
 //!
