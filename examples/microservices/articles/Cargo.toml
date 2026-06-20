@@ -10,14 +10,14 @@ license.workspace = true
 axum-otel = { workspace = true }
 tracing-otel-extra = { workspace = true, features = ["env"] }
 
-axum = { workspace = true }
-tower = { workspace = true }
-tower-http = { workspace = true, features = ["request-id"] }
 anyhow = { workspace = true }
+axum = { workspace = true }
 dotenvy = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true }
+tower = { workspace = true }
+tower-http = { workspace = true, features = ["request-id"] }
 tracing = { workspace = true }
 
 reqwest = { workspace = true }

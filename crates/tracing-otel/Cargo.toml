@@ -13,37 +13,29 @@ readme = "README.md"
 keywords = ["tracing", "opentelemetry", "logging"]
 
 [features]
-# Base dependencies
+default = []
+
+# Field extraction.
 fields = ["dep:http"]
 macros = ["dep:tracing"]
 
-# Composite features
-http = [
-	"dep:http",
-	"dep:tracing",
-	"dep:opentelemetry",
-	"dep:opentelemetry-http",
-	"dep:tracing-opentelemetry",
-	"fields",
-]
+# HTTP context propagation and span creation.
+http = ["fields", "dep:http", "dep:opentelemetry", "dep:opentelemetry-http"]
+context = ["http", "dep:tracing", "dep:tracing-opentelemetry"]
+span = ["context", "macros"]
 
-# Core features
-# This feature is used to enable the OpenTelemetry integration.
+# OpenTelemetry provider/subscriber bootstrap.
 otel = ["dep:tracing-opentelemetry-extra"]
 
-# This feature is used to enable the logging integration.
+# Opinionated application logging/bootstrap facade.
 logger = [
-	"dep:tracing",
-	"dep:opentelemetry",
-	"dep:tracing-subscriber",
-	"dep:tracing-appender",
-	"tracing-opentelemetry-extra/subscriber",
 	"otel",
+	"dep:opentelemetry",
+	"dep:tracing",
+	"dep:tracing-appender",
+	"dep:tracing-subscriber",
+	"tracing-opentelemetry-extra/subscriber",
 ]
-
-# Feature combinations
-context = ["http"]
-span = ["context", "fields", "http", "macros"]
 env = ["dep:config", "logger"]
 
 [dependencies]
