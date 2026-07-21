@@ -4,8 +4,8 @@ use anyhow::{Context, Result};
 use config::{Config, Environment};
 
 use super::config::{Logger, LoggerFileAppender};
+use super::guard::LoggerGuard;
 use super::init::init_tracing_from_logger;
-use crate::otel::OtelGuard;
 
 /// Initialize a Logger from environment variables
 pub fn init_logger_from_env(prefix: Option<&str>) -> Result<Logger> {
@@ -26,7 +26,7 @@ pub fn init_logger_from_env(prefix: Option<&str>) -> Result<Logger> {
 }
 
 /// Initialize tracing from environment variables
-pub fn init_logging_from_env(prefix: Option<&str>) -> Result<OtelGuard> {
+pub fn init_logging_from_env(prefix: Option<&str>) -> Result<LoggerGuard> {
     let logger = init_logger_from_env(prefix)?;
     init_tracing_from_logger(logger)
 }

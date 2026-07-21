@@ -24,20 +24,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Cache Rust dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/
-            ~/.cargo/git/db/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-            ${{ runner.os }}-cargo-
       - uses: mozilla-actions/sccache-action@v0.0.9
         with:
           version: "v0.10.0"
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
       - name: Clippy
         run: cargo clippy --all-features -- -D warnings
 
@@ -46,20 +38,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Cache Rust dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/
-            ~/.cargo/git/db/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-            ${{ runner.os }}-cargo-
       - uses: mozilla-actions/sccache-action@v0.0.9
         with:
           version: "v0.10.0"
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
       - name: Run tests
         run: cargo test --all-features
       - name: Run doc tests
@@ -74,16 +58,9 @@ jobs:
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.MSRV }}
-      - name: Cache Rust dependencies
-        uses: actions/cache@v4
+      - uses: Swatinem/rust-cache@v2
         with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/
-            ~/.cargo/git/db/
-          key: ${{ runner.os }}-cargo-msrv-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-msrv-
+          cache-on-failure: true
       - name: Check MSRV
         run: cargo check --all-features
 
