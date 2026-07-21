@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.33.1](https://github.com/nivek-ph/tracing-otel-extra/compare/axum-otel-v0.33.0...axum-otel-v0.33.1)
+
 ### Changed
 
 - Replace the internal `tracing-otel-extra` dependency with its successor, `tracing-otel`. Applications that also depend on the shared tracing crate directly must replace `tracing-otel-extra = "0.33.0"` with `tracing-otel = "0.33.1"` and update Rust imports from `tracing_otel_extra` to `tracing_otel`.
