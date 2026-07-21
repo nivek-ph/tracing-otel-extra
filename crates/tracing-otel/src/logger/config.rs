@@ -11,8 +11,8 @@ use super::deserialize::{
     default, deserialize_attributes, deserialize_level_optional, deserialize_level_required,
     deserialize_log_format, deserialize_log_format_optional, deserialize_span_events,
 };
+use super::guard::LoggerGuard;
 use super::init::init_tracing_from_logger;
-use crate::otel::OtelGuard;
 
 #[cfg(feature = "env")]
 use super::env::init_logger_from_env;
@@ -299,7 +299,7 @@ impl Logger {
     }
 
     /// Initialize tracing with this configuration.
-    pub fn init(self) -> Result<OtelGuard> {
+    pub fn init(self) -> Result<LoggerGuard> {
         init_tracing_from_logger(self)
     }
 

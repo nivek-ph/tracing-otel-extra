@@ -192,7 +192,7 @@ async fn health_check() -> &'static str {
 
 ## Resource Cleanup
 
-`ProviderGuard` implements the RAII pattern and automatically cleans up OpenTelemetry resources when the guard goes out of scope:
+`LoggerGuard` implements the RAII pattern and automatically shuts down OpenTelemetry providers, then releases non-blocking file writer guards to trigger their shutdown and flush path. The writer does not report the flush outcome:
 
 ```rust
 {

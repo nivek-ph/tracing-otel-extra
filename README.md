@@ -372,7 +372,7 @@ let _guard = Logger::new("service")
 
 - `Logger` - Main configuration builder
 - `LogFormat` - Log output format options
-- `ProviderGuard` - RAII resource management
+- `LoggerGuard` - RAII ownership for telemetry providers and non-blocking writer shutdown
 
 ### tracing-opentelemetry-extra
 

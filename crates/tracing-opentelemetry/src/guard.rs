@@ -4,8 +4,17 @@ use opentelemetry_sdk::{
 };
 use tracing::warn;
 
-/// A guard that holds the tracer provider, meter provider, and logger provider and ensures proper cleanup
-#[derive(Debug, Clone)]
+/// A guard that holds the tracer provider, meter provider, and logger provider and ensures proper cleanup.
+///
+/// The guard has unique ownership of provider shutdown and cannot be cloned.
+///
+/// ```compile_fail
+/// use tracing_opentelemetry_extra::OtelGuard;
+///
+/// let guard = OtelGuard::new(None, None, None);
+/// let _duplicate = guard.clone();
+/// ```
+#[derive(Debug)]
 pub struct OtelGuard {
     tracer_provider: Option<SdkTracerProvider>,
     meter_provider: Option<SdkMeterProvider>,

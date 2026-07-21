@@ -5,6 +5,11 @@
 ### ⚠️ Breaking Changes
 
 - Change `make_request_span` to accept a customization callback that runs before remote parent context is applied.
+- Return `LoggerGuard` from `Logger::init`, `init_logging`, and `init_logging_from_env`; output-layer construction is now internal so writer ownership cannot escape the returned guard.
+
+### 🐛 Bug Fixes
+
+- Keep the non-blocking file writer guard in `LoggerGuard` so dropping or shutting down the logger triggers tracing-appender's writer shutdown and flush path instead of leaving the guard in a process-level `OnceLock`; the writer does not report the flush outcome.
 
 ## [0.31.8](https://github.com/nivek-ph/tracing-otel-extra/compare/tracing-otel-extra-v0.31.7...tracing-otel-extra-v0.31.8)
 

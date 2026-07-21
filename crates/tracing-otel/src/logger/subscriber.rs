@@ -7,8 +7,7 @@ use crate::{
         init_tracing_subscriber, opentelemetry::KeyValue,
     },
 };
-use anyhow::{Context, Result, anyhow};
-use std::sync::OnceLock;
+use anyhow::{Context, Result};
 use tracing::Level;
 use tracing_appender::non_blocking::WorkerGuard;
 use tracing_opentelemetry_extra::BoxLayer;
@@ -17,13 +16,9 @@ use tracing_subscriber::{
     fmt::{self, MakeWriter, format::FmtSpan},
 };
 
-// Keep non-blocking appender worker guard to prevent log loss
-static NONBLOCKING_APPENDER_GUARD: OnceLock<WorkerGuard> = OnceLock::new();
-
-pub fn set_nonblocking_appender_guard(guard: WorkerGuard) -> Result<()> {
-    NONBLOCKING_APPENDER_GUARD
-        .set(guard)
-        .map_err(|_| anyhow!("cannot lock for appender"))
+pub(crate) struct OutputLayers {
+    pub(crate) layers: Vec<BoxLayer>,
+    pub(crate) worker_guard: Option<WorkerGuard>,
 }
 
 /// Creates an environment filter for tracing based on the given level.
@@ -68,8 +63,9 @@ where
 }
 
 /// Create output layers based on configuration.
-pub fn create_output_layers(logger: &Logger) -> Result<Vec<BoxLayer>> {
+pub(crate) fn create_output_layers(logger: &Logger) -> Result<OutputLayers> {
     let mut layers: Vec<BoxLayer> = vec![];
+    let mut worker_guard = None;
 
     // Add console layer if enabled
     if logger.console_enabled {
@@ -96,9 +92,9 @@ pub fn create_output_layers(logger: &Logger) -> Result<Vec<BoxLayer>> {
             .context("Failed to build file appender")?;
 
         let file_appender_layer = if config.non_blocking {
-            let (non_blocking_file_appender, work_guard) =
+            let (non_blocking_file_appender, non_blocking_worker_guard) =
                 tracing_appender::non_blocking(file_appender);
-            set_nonblocking_appender_guard(work_guard)?;
+            worker_guard = Some(non_blocking_worker_guard);
             init_layer(
                 non_blocking_file_appender,
                 &config.format_or_default(),
@@ -115,7 +111,10 @@ pub fn create_output_layers(logger: &Logger) -> Result<Vec<BoxLayer>> {
         };
         layers.push(file_appender_layer);
     }
-    Ok(layers)
+    Ok(OutputLayers {
+        layers,
+        worker_guard,
+    })
 }
 
 /// Initializes the complete tracing stack with OpenTelemetry integration.

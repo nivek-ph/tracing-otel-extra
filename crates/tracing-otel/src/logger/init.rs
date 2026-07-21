@@ -1,15 +1,20 @@
 //! Logger initialization functions.
 
-use crate::otel::OtelGuard;
 use anyhow::{Context, Result};
 
 use super::config::Logger;
-use super::subscriber::{create_output_layers, setup_tracing};
+use super::{
+    guard::LoggerGuard,
+    subscriber::{OutputLayers, create_output_layers, setup_tracing},
+};
 
 /// Initialize tracing from a Logger configuration
-pub fn init_tracing_from_logger(logger: Logger) -> Result<OtelGuard> {
-    let layers = create_output_layers(&logger)?;
-    let guard = setup_tracing(
+pub fn init_tracing_from_logger(logger: Logger) -> Result<LoggerGuard> {
+    let OutputLayers {
+        layers,
+        worker_guard,
+    } = create_output_layers(&logger)?;
+    let otel_guard = setup_tracing(
         &logger.service_name,
         &logger.attributes,
         logger.sample_ratio,
@@ -19,11 +24,11 @@ pub fn init_tracing_from_logger(logger: Logger) -> Result<OtelGuard> {
         logger.otel_logs_enabled,
     )
     .context("Failed to initialize tracing")?;
-    Ok(guard)
+    Ok(LoggerGuard::new(otel_guard, worker_guard))
 }
 
 /// Convenience function to initialize tracing with default settings
-pub fn init_logging(service_name: &str) -> Result<OtelGuard> {
+pub fn init_logging(service_name: &str) -> Result<LoggerGuard> {
     let logger = Logger::new(service_name);
     init_tracing_from_logger(logger)
 }

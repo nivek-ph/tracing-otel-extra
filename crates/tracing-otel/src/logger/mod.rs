@@ -62,6 +62,7 @@ mod config;
 mod deserialize;
 #[cfg(feature = "env")]
 mod env;
+mod guard;
 mod init;
 mod subscriber;
 
@@ -70,6 +71,7 @@ pub use config::{LogFormat, LogRollingRotation, Logger, LoggerFileAppender};
 pub use deserialize::default;
 #[cfg(feature = "env")]
 pub use env::{init_logger_from_env, init_logging_from_env};
+pub use guard::LoggerGuard;
 pub use init::{init_logging, init_tracing_from_logger};
 pub use subscriber::*;
 
