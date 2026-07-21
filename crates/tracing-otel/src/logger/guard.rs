@@ -7,6 +7,8 @@ use tracing_appender::non_blocking::WorkerGuard;
 /// Owns the OpenTelemetry providers and non-blocking log writers initialized by [`super::Logger`].
 #[derive(Debug)]
 pub struct LoggerGuard {
+    // Field order is intentional: Rust drops fields in declaration order. Keep the provider
+    // guard first so shutdown diagnostics can be flushed before the writer guard is released.
     otel_guard: OtelGuard,
     worker_guard: Option<WorkerGuard>,
 }
@@ -91,8 +93,17 @@ mod tests {
 
     #[test]
     fn dropping_logger_guard_flushes_non_blocking_file_logs() -> anyhow::Result<()> {
+        struct TempDirGuard(std::path::PathBuf);
+
+        impl Drop for TempDirGuard {
+            fn drop(&mut self) {
+                let _ = fs::remove_dir_all(&self.0);
+            }
+        }
+
         let log_dir = create_tmp_log_dir();
         fs::create_dir_all(&log_dir)?;
+        let _cleanup = TempDirGuard(log_dir.clone());
         let file_appender = tracing_appender::rolling::never(&log_dir, "logger-guard.log");
         let (writer, worker_guard) = tracing_appender::non_blocking(file_appender);
         let guard = LoggerGuard::new(OtelGuard::new(None, None, None), Some(worker_guard));
@@ -115,7 +126,6 @@ mod tests {
         }
         assert_eq!(logs.matches(LOG_MARKER).count(), LOG_RECORDS);
 
-        fs::remove_dir_all(log_dir)?;
         Ok(())
     }
 
