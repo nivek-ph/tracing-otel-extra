@@ -147,7 +147,7 @@ fn build_log_exporter() -> Result<opentelemetry_otlp::LogExporter> {
 /// # Examples
 ///
 /// ```rust
-/// use tracing_opentelemetry_extra::{get_resource, init_tracer_provider};
+/// use otel_init::{get_resource, init_tracer_provider};
 /// use opentelemetry::KeyValue;
 ///
 /// #[tokio::main]
@@ -195,7 +195,7 @@ pub fn init_tracer_provider(resource: &Resource, sample_ratio: f64) -> Result<Sd
 /// # Examples
 ///
 /// ```rust
-/// use tracing_opentelemetry_extra::{get_resource, init_meter_provider};
+/// use otel_init::{get_resource, init_meter_provider};
 /// use opentelemetry::KeyValue;
 ///
 /// #[tokio::main]
@@ -242,7 +242,7 @@ pub fn init_meter_provider(
 /// # Examples
 ///
 /// ```rust
-/// use tracing_opentelemetry_extra::{get_resource, init_logger_provider};
+/// use otel_init::{get_resource, init_logger_provider};
 /// use opentelemetry::KeyValue;
 ///
 /// #[tokio::main]

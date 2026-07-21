@@ -21,7 +21,7 @@
 /// # Example
 ///
 /// ```rust
-/// use tracing_otel_extra::dyn_event;
+/// use tracing_otel::dyn_event;
 /// use tracing::Level;
 ///
 /// let is_critical_error = true;
@@ -67,7 +67,7 @@ macro_rules! dyn_event {
 /// # Example
 ///
 /// ```rust
-/// use tracing_otel_extra::dyn_span;
+/// use tracing_otel::dyn_span;
 /// use tracing::Level;
 ///
 /// let is_important_operation = true;

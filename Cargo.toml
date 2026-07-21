@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "crates/axum-otel",
-    "crates/tracing-opentelemetry",
+    "crates/otel-init",
     "crates/tracing-otel",
     "examples/microservices/articles",
     "examples/microservices/users",
@@ -11,12 +11,12 @@ resolver = "2"
 
 [workspace.package]
 rust-version = "1.92.0"
-version = "0.33.0"
+version = "0.33.1"
 authors = ["nivek <h49987180@gmail.com>"]
 edition = "2024"
 license = "MIT/Apache-2.0"
 repository = "https://github.com/nivek-ph/tracing-otel-extra"
-documentation = "https://docs.rs/tracing-otel-extra/"
+documentation = "https://docs.rs/tracing-otel/"
 readme = "README.md"
 description = "Tracing and OpenTelemetry integration utility library for Rust applications."
 keywords = [
@@ -33,9 +33,9 @@ categories = ["asynchronous"]
 
 [workspace.dependencies]
 # workspace crates
-axum-otel = { path = "crates/axum-otel", version = "0.33.0" }
-tracing-opentelemetry-extra = { path = "crates/tracing-opentelemetry", version = "0.33.0" }
-tracing-otel-extra = { path = "crates/tracing-otel", version = "0.33.0" }
+axum-otel = { path = "crates/axum-otel", version = "0.33.1" }
+otel-init = { path = "crates/otel-init", version = "0.33.1" }
+tracing-otel = { path = "crates/tracing-otel", version = "0.33.1" }
 
 # external crates
 anyhow = "1.0"

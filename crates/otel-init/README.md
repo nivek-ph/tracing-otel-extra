@@ -1,8 +1,10 @@
-# tracing-opentelemetry-extra
+# otel-init
 
 **Reference:** This crate is mainly organized based on the [official tracing-opentelemetry OTLP example](https://github.com/tokio-rs/tracing-opentelemetry/blob/v0.1.x/examples/opentelemetry-otlp.rs).
 
 This crate provides enhanced OpenTelemetry integration for tracing applications. It's based on the [tracing-opentelemetry examples](https://github.com/tokio-rs/tracing-opentelemetry/blob/v0.1.x/examples/opentelemetry-otlp.rs) and provides a clean, easy-to-use API for setting up OpenTelemetry tracing and metrics.
+
+`otel-init` is the successor to `tracing-opentelemetry-extra`. It is a separate crates.io package, so applications must update both the Cargo dependency name and Rust imports; Cargo cannot migrate the package automatically. See the [changelog](CHANGELOG.md) for the migration steps.
 
 ## Features
 
@@ -45,7 +47,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-tracing-opentelemetry-extra = "0.31.x"
+otel-init = "0.33"
 ```
 
 ## Quick Start
@@ -54,7 +56,7 @@ tracing-opentelemetry-extra = "0.31.x"
 
 ```rust
 use opentelemetry::KeyValue;
-use tracing_opentelemetry_extra::{get_resource, init_tracer_provider, init_meter_provider, init_logger_provider, OtelGuard};
+use otel_init::{get_resource, init_tracer_provider, init_meter_provider, init_logger_provider, OtelGuard};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -88,7 +90,7 @@ async fn main() -> anyhow::Result<()> {
 ```rust
 use opentelemetry::KeyValue;
 use tracing::Level;
-use tracing_opentelemetry_extra::{get_resource, init_tracer_provider, init_meter_provider, init_logger_provider, init_tracing_subscriber, init_env_filter, OtelGuard};
+use otel_init::{get_resource, init_tracer_provider, init_meter_provider, init_logger_provider, init_tracing_subscriber, init_env_filter, OtelGuard};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
 #[tokio::main]
@@ -183,5 +185,5 @@ at your option.
 
 ## Related Crates
 
-- [tracing-otel-extra](../tracing-otel/) - HTTP, context, fields, and span utilities
+- [tracing-otel](../tracing-otel/) - HTTP, context, fields, and span utilities
 - [axum-otel](../axum-otel/) - Axum web framework integration 

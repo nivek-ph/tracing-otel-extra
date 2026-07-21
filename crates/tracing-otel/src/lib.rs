@@ -18,7 +18,7 @@
 //!
 //! Basic usage with configuration builder:
 //! ```rust,no_run,ignore
-//! use tracing_otel_extra::{Logger, LogFormat};
+//! use tracing_otel::{Logger, LogFormat};
 //! use opentelemetry::KeyValue;
 //!
 //! #[tokio::main]
@@ -42,7 +42,7 @@
 //!
 //! Using environment-based configuration:
 //! ```rust,no_run,ignore
-//! use tracing_otel_extra::init_logging_from_env;
+//! use tracing_otel::init_logging_from_env;
 //!
 //! #[tokio::main]
 //! async fn main() {
@@ -70,7 +70,7 @@ pub mod http;
 // OpenTelemetry integration
 #[cfg(feature = "otel")]
 pub mod otel {
-    pub use tracing_opentelemetry_extra::*;
+    pub use otel_init::*;
 }
 
 // Logging functionality

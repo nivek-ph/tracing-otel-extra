@@ -1,12 +1,12 @@
 [package]
-name = "tracing-otel-extra"
+name = "tracing-otel"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
 categories.workspace = true
-description = "Bootstrap utilities for tracing and OpenTelemetry integration."
-documentation = "https://docs.rs/tracing-otel-extra"
+description = "Shared tracing utilities and application logging bootstrap for OpenTelemetry."
+documentation = "https://docs.rs/tracing-otel"
 homepage = "https://github.com/nivek-ph/tracing-otel-extra/tree/main/crates/tracing-otel"
 repository = "https://github.com/nivek-ph/tracing-otel-extra/tree/main/crates/tracing-otel"
 readme = "README.md"
@@ -25,7 +25,7 @@ context = ["http", "dep:tracing", "dep:tracing-opentelemetry"]
 span = ["context", "macros"]
 
 # OpenTelemetry provider/subscriber bootstrap.
-otel = ["dep:tracing-opentelemetry-extra"]
+otel = ["dep:otel-init"]
 
 # Opinionated application logging/bootstrap facade.
 logger = [
@@ -34,7 +34,7 @@ logger = [
 	"dep:tracing",
 	"dep:tracing-appender",
 	"dep:tracing-subscriber",
-	"tracing-opentelemetry-extra/subscriber",
+	"otel-init/subscriber",
 ]
 env = ["dep:config", "logger"]
 
@@ -55,7 +55,7 @@ opentelemetry-otlp = { workspace = true, optional = true }
 tracing = { workspace = true, optional = true }
 tracing-appender = { workspace = true, optional = true }
 tracing-opentelemetry = { workspace = true, optional = true }
-tracing-opentelemetry-extra = { workspace = true, optional = true }
+otel-init = { workspace = true, optional = true }
 tracing-subscriber = { workspace = true, features = ["json"], optional = true }
 
 config = { workspace = true, optional = true }

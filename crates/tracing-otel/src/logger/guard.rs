@@ -13,7 +13,7 @@ use crate::otel::OtelGuard;
 /// # Examples
 ///
 /// ```no_run
-/// use tracing_otel_extra::Logger;
+/// use tracing_otel::Logger;
 ///
 /// # fn main() -> anyhow::Result<()> {
 /// let guard = Logger::new("my-service").init()?;
@@ -163,7 +163,7 @@ mod tests {
             .duration_since(UNIX_EPOCH)
             .expect("system clock should be after Unix epoch")
             .as_nanos();
-        std::env::temp_dir().join(format!("tracing-otel-extra-{}-{nonce}", std::process::id()))
+        std::env::temp_dir().join(format!("tracing-otel-{}-{nonce}", std::process::id()))
     }
 
     fn read_logs(log_dir: &Path) -> std::io::Result<String> {

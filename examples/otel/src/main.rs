@@ -8,7 +8,7 @@ use tower::ServiceBuilder;
 use tower_http::request_id::{MakeRequestUuid, PropagateRequestIdLayer, SetRequestIdLayer};
 use tower_http::trace::TraceLayer;
 use tracing::info;
-use tracing_otel_extra::Logger;
+use tracing_otel::Logger;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct HelloQuery {

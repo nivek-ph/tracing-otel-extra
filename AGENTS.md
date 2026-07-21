@@ -20,7 +20,7 @@ tracing-otel-extra/
 ├── crates/
 │   ├── axum-otel/           # Axum middleware for HTTP tracing
 │   ├── tracing-otel/        # Core logging and tracing utilities
-│   └── tracing-opentelemetry/ # OpenTelemetry integration layer
+│   └── otel-init/           # OpenTelemetry initialization layer
 ├── examples/
 │   ├── otel/                # Basic OpenTelemetry example
 │   └── microservices/       # Multi-service distributed tracing demo
@@ -32,23 +32,23 @@ tracing-otel-extra/
 
 ```
 axum-otel
-    └── tracing-otel-extra (tracing-otel)
-            └── tracing-opentelemetry-extra (tracing-opentelemetry)
+    └── tracing-otel
+            └── otel-init
 ```
 
 ### Crate Boundaries
 
 | Crate | Responsibility |
 | ----- | -------------- |
-| `tracing-opentelemetry-extra` | OpenTelemetry provider/subscriber bootstrap (`OtelGuard`, OTLP setup) |
-| `tracing-otel-extra` | Shared HTTP tracing utilities (`fields`, `context`, `span`, `macros`) and the opinionated `Logger` facade |
+| `otel-init` | OpenTelemetry provider/subscriber bootstrap (`OtelGuard`, OTLP setup) |
+| `tracing-otel` | Shared HTTP tracing utilities (`fields`, `context`, `span`, `macros`) and the opinionated `Logger` facade |
 | `axum-otel` | Axum/Tower HTTP middleware (`AxumOtelSpanCreator`, `AxumOtelOnResponse`, `AxumOtelOnFailure`) |
 
 - Applications that only need Axum middleware should depend on `axum-otel`.
-- Applications that only need provider-level OpenTelemetry setup can use `tracing-opentelemetry-extra`.
-- Applications that want the full logging/bootstrap facade should use `tracing-otel-extra` with `logger` or `env`.
+- Applications that only need provider-level OpenTelemetry setup can use `otel-init`.
+- Applications that want the full logging/bootstrap facade should use `tracing-otel` with `logger` or `env`.
 
-Workspace `[workspace.dependencies]` entries must not enable crate features implicitly. Each member crate must declare the `tracing-otel-extra` features its source code actually uses (for example, `axum-otel` enables `context`, `fields`, and `macros`).
+Workspace `[workspace.dependencies]` entries must not enable crate features implicitly. Each member crate must declare the `tracing-otel` features its source code actually uses (for example, `axum-otel` enables `context`, `fields`, and `macros`).
 
 ## Coding Conventions
 
@@ -93,7 +93,7 @@ Workspace `[workspace.dependencies]` entries must not enable crate features impl
 
 ### Feature Flags
 
-`tracing-otel-extra` has no default features:
+`tracing-otel` has no default features:
 
 | Feature   | Description                      | Depends on |
 | --------- | -------------------------------- | ---------- |
@@ -102,7 +102,7 @@ Workspace `[workspace.dependencies]` entries must not enable crate features impl
 | `http`    | HTTP context propagation (no tracing bridge) | `fields` |
 | `context` | Trace context utilities (`set_otel_parent`, etc.) | `http` |
 | `span`    | HTTP span creation utilities     | `context`, `macros` |
-| `otel`    | Re-exports `tracing-opentelemetry-extra` | — |
+| `otel`    | Re-exports `otel-init` | — |
 | `logger`  | Opinionated logging/bootstrap facade | `otel` |
 | `env`     | Environment-based `Logger` configuration | `logger` |
 
@@ -165,10 +165,10 @@ let span = dyn_span!(
 cargo test
 
 # Run tests for a specific crate
-cargo test -p tracing-otel-extra
+cargo test -p tracing-otel
 
 # Run tests with specific features
-cargo test -p tracing-otel-extra --features "context,http"
+cargo test -p tracing-otel --features "context,http"
 ```
 
 ### Test Requirements

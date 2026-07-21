@@ -23,7 +23,7 @@ pub type BoxLayer = Box<dyn Layer<Registry> + Sync + Send>;
 /// # Examples
 ///
 /// ```rust
-/// use tracing_opentelemetry_extra::init_env_filter;
+/// use otel_init::init_env_filter;
 /// use tracing::Level;
 ///
 /// let filter = init_env_filter(&Level::INFO);

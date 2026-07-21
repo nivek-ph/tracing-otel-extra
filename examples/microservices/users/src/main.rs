@@ -12,7 +12,7 @@ use tower::ServiceBuilder;
 use tower_http::request_id::{MakeRequestUuid, PropagateRequestIdLayer, SetRequestIdLayer};
 use tower_http::trace::TraceLayer;
 use tracing::Level;
-use tracing_otel_extra::Logger;
+use tracing_otel::Logger;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 struct User {

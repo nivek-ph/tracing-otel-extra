@@ -1,10 +1,12 @@
-# tracing-otel-extra
+# tracing-otel
 
-[![Crates.io](https://img.shields.io/crates/v/tracing-otel-extra.svg)](https://crates.io/crates/tracing-otel-extra)
-[![Documentation](https://docs.rs/tracing-otel-extra/badge.svg)](https://docs.rs/tracing-otel-extra)
+[![Crates.io](https://img.shields.io/crates/v/tracing-otel.svg)](https://crates.io/crates/tracing-otel)
+[![Documentation](https://docs.rs/tracing-otel/badge.svg)](https://docs.rs/tracing-otel)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](../LICENSE)
 
 A tracing and OpenTelemetry integration utility library for Rust applications, providing easy-to-use configuration and initialization capabilities.
+
+`tracing-otel` is the successor to `tracing-otel-extra`. It is a separate crates.io package, so applications must update both the Cargo dependency name and Rust imports; Cargo cannot migrate the package automatically. See the [changelog](CHANGELOG.md) for the migration steps.
 
 ## Features
 
@@ -15,17 +17,17 @@ A tracing and OpenTelemetry integration utility library for Rust applications, p
 - **Built-in Metrics Support** - Integrated OpenTelemetry metrics collection and export
 - **Environment Detection** - Automatic detection of operating system and process information
 - **OTLP Export** - Built-in OTLP protocol support, can directly export to Jaeger, OTEL Collector, etc.
-- **HTTP request spans** (with `http` + `span` features) - [`make_request_span`](https://docs.rs/tracing-otel-extra/latest/tracing_otel_extra/http/span/fn.make_request_span.html) uses OpenTelemetry-aligned attribute names and supports framework-specific customization before parent context is applied; see the [`http::span`](https://docs.rs/tracing-otel-extra/latest/tracing_otel_extra/http/span/index.html) module and [`axum-otel`](https://docs.rs/axum-otel) for migration notes.
+- **HTTP request spans** (with `http` + `span` features) - [`make_request_span`](https://docs.rs/tracing-otel/latest/tracing_otel/http/span/fn.make_request_span.html) uses OpenTelemetry-aligned attribute names and supports framework-specific customization before parent context is applied; see the [`http::span`](https://docs.rs/tracing-otel/latest/tracing_otel/http/span/index.html) module and [`axum-otel`](https://docs.rs/axum-otel) for migration notes.
 
 ## Crate Scope
 
-`tracing-otel-extra` contains shared tracing utilities:
+`tracing-otel` contains shared tracing utilities:
 
 - `fields`, `http`, `context`, and `span` for HTTP tracing helpers.
 - `macros` for runtime-configurable tracing macros.
 - `logger` and `env` for opinionated application bootstrap.
 
-The `logger` feature intentionally initializes tracing, metrics, optional OpenTelemetry logs, console output, and optional file output. Applications that only need Axum middleware should depend on `axum-otel`; applications that only need provider-level OpenTelemetry setup can use `tracing-opentelemetry-extra`.
+The `logger` feature intentionally initializes tracing, metrics, optional OpenTelemetry logs, console output, and optional file output. Applications that only need Axum middleware should depend on `axum-otel`; applications that only need provider-level OpenTelemetry setup can use `otel-init`.
 
 ## Quick Start
 
@@ -33,7 +35,7 @@ Add the dependency to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-tracing-otel-extra = "0.1.0"
+tracing-otel = "0.33"
 tracing = "0.1"
 tokio = { version = "1.0", features = ["full"] }
 ```
@@ -41,7 +43,7 @@ tokio = { version = "1.0", features = ["full"] }
 ### Basic Usage
 
 ```rust
-use tracing_otel_extra::Logger;
+use tracing_otel::Logger;
 use tracing::{info, warn};
 
 #[tokio::main]
@@ -60,7 +62,7 @@ async fn main() -> anyhow::Result<()> {
 ### Advanced Configuration
 
 ```rust
-use tracing_otel_extra::{Logger, LogFormat};
+use tracing_otel::{Logger, LogFormat};
 use opentelemetry::KeyValue;
 use tracing::Level;
 
@@ -93,7 +95,7 @@ async fn main() -> anyhow::Result<()> {
 ### Legacy API (Backward Compatibility)
 
 ```rust
-use tracing_otel_extra::init_logging;
+use tracing_otel::init_logging;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -157,7 +159,7 @@ use axum::{routing::get, Router};
 use axum_otel::{AxumOtelSpanCreator, AxumOtelOnResponse, Level};
 use tower::ServiceBuilder;
 use tower_http::trace::TraceLayer;
-use tracing_otel_extra::{Logger, LogFormat};
+use tracing_otel::{Logger, LogFormat};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

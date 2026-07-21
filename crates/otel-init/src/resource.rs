@@ -14,7 +14,7 @@ use opentelemetry_sdk::Resource;
 /// # Examples
 ///
 /// ```rust
-/// use tracing_opentelemetry_extra::get_resource;
+/// use otel_init::get_resource;
 /// use opentelemetry::KeyValue;
 ///
 /// let resource = get_resource(

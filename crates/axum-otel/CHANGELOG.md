@@ -1,6 +1,14 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
 ## [Unreleased]
+
+### Changed
+
+- Replace the internal `tracing-otel-extra` dependency with its successor, `tracing-otel`. Applications that also depend on the shared tracing crate directly must replace `tracing-otel-extra = "0.33.0"` with `tracing-otel = "0.33.1"` and update Rust imports from `tracing_otel_extra` to `tracing_otel`.
+
+## [0.33.0](https://github.com/nivek-ph/tracing-otel-extra/compare/axum-otel-v0.32.1...axum-otel-v0.33.0)
 
 ### ⚠️ Breaking Changes
 
@@ -38,10 +46,3 @@
 ### ⚙️ Miscellaneous Tasks
 
 - Update workspace dependencies and enhance CI configuration - ([244742d](https://github.com/nivek-ph/tracing-otel-extra/commit/244742d220816d3750abfd67175be04bacd057da))
-
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).

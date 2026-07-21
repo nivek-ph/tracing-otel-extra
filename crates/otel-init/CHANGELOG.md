@@ -1,6 +1,24 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
 ## [Unreleased]
+
+### Added
+
+- Publish `otel-init` `0.33.1` as the successor to `tracing-opentelemetry-extra` `0.33.0`. These are separate crates.io packages; Cargo does not migrate dependencies automatically.
+
+### Migration
+
+- Replace `tracing-opentelemetry-extra = "0.33.0"` with `otel-init = "0.33.1"` in `Cargo.toml`.
+- Replace Rust imports from `tracing_opentelemetry_extra` with `otel_init`.
+- The old `tracing-opentelemetry-extra` package remains available at `0.33.0` until it is yanked after the successor is published.
+
+## Predecessor history
+
+The entries below were published under the `tracing-opentelemetry-extra` package name.
+
+## [0.33.0](https://github.com/nivek-ph/tracing-otel-extra/compare/tracing-opentelemetry-extra-v0.32.1...tracing-opentelemetry-extra-v0.33.0)
 
 ### ⚠️ Breaking Changes
 
@@ -38,10 +56,3 @@
 - Update dependencies and refactor configuration handling - ([576ba88](https://github.com/nivek-ph/tracing-otel-extra/commit/576ba887424fc684aaea33a92cfc60debe36a521))
 
 - Update dependencies and improve CI workflow - ([7b4410b](https://github.com/nivek-ph/tracing-otel-extra/commit/7b4410b5b8fc295e2b14c3f752b0a99d3753bb44))
-
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). 

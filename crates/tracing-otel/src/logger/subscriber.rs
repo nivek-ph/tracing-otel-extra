@@ -8,9 +8,9 @@ use crate::{
     },
 };
 use anyhow::{Context, Result};
+use otel_init::BoxLayer;
 use tracing::Level;
 use tracing_appender::non_blocking::WorkerGuard;
-use tracing_opentelemetry_extra::BoxLayer;
 use tracing_subscriber::{
     EnvFilter, Layer, Registry,
     fmt::{self, MakeWriter, format::FmtSpan},
