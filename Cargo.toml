@@ -77,5 +77,5 @@ tower-http = { version = "0.6.6", features = ["trace"] }
 
 tracing = { version = "0.1.44" }
 tracing-appender = { version = "0.2.4" }
-tracing-opentelemetry = { version = "0.32.0" }
+tracing-opentelemetry = { version = "0.32.1" }
 tracing-subscriber = { version = "0.3", features = ["registry", "env-filter"] }

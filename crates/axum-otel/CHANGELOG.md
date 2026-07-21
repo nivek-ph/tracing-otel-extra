@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Delegate shared HTTP server span creation to `tracing-otel-extra`, leaving `AxumOtelSpanCreator` responsible only for Axum-specific enrichment.
 
 ## [0.31.7](https://github.com/nivek-ph/tracing-otel-extra/compare/axum-otel-v0.31.6...axum-otel-v0.31.7)
 
@@ -37,4 +40,4 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). 
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).

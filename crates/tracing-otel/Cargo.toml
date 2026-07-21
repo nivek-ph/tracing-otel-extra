@@ -64,7 +64,7 @@ config = { workspace = true, optional = true }
 opentelemetry = { workspace = true }
 opentelemetry-http = { workspace = true }
 opentelemetry-otlp = { workspace = true }
-opentelemetry_sdk = { workspace = true }
+opentelemetry_sdk = { workspace = true, features = ["testing"] }
 serial_test = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
