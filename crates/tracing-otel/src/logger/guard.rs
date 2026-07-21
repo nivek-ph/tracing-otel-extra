@@ -1,10 +1,28 @@
 //! Runtime ownership for initialized logging resources.
 
-use crate::otel::OtelGuard;
 use anyhow::Result;
 use tracing_appender::non_blocking::WorkerGuard;
 
+use crate::otel::OtelGuard;
+
 /// Owns the OpenTelemetry providers and non-blocking log writers initialized by [`super::Logger`].
+///
+/// Keep this guard alive for as long as logging is needed. Dropping it performs automatic
+/// cleanup, or call [`Self::shutdown`] to handle OpenTelemetry shutdown errors explicitly.
+///
+/// # Examples
+///
+/// ```no_run
+/// use tracing_otel_extra::Logger;
+///
+/// # fn main() -> anyhow::Result<()> {
+/// let guard = Logger::new("my-service").init()?;
+///
+/// // Run the application while `guard` remains in scope.
+/// guard.shutdown()?;
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Debug)]
 pub struct LoggerGuard {
     // Field order is intentional: Rust drops fields in declaration order. Keep the provider
