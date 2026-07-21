@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### ⚠️ Breaking Changes
+
+- Upgrade OpenTelemetry dependencies to `0.32` and `tracing-opentelemetry` to `0.33`. Downstream crates must use matching OpenTelemetry versions.
+
 ### Changed
 
 - Delegate shared HTTP server span creation to `tracing-otel-extra`, leaving `AxumOtelSpanCreator` responsible only for Axum-specific enrichment.

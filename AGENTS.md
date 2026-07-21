@@ -237,11 +237,11 @@ mod tests {
 
 | Crate                          | Purpose                         |
 | ------------------------------ | ------------------------------- |
-| `opentelemetry` (0.31)         | Core OpenTelemetry APIs         |
-| `opentelemetry-otlp` (0.31)    | OTLP exporter                   |
+| `opentelemetry` (0.32)         | Core OpenTelemetry APIs         |
+| `opentelemetry-otlp` (0.32)    | OTLP exporter                   |
 | `tracing` (0.1)                | Rust tracing framework          |
 | `tracing-subscriber` (0.3)     | Subscriber implementations      |
-| `tracing-opentelemetry` (0.32) | Bridge between tracing and OTel |
+| `tracing-opentelemetry` (0.33) | Bridge between tracing and OTel |
 | `axum` (0.8)                   | Web framework                   |
 | `tower-http` (0.6)             | HTTP middleware utilities       |
 | `reqwest` (0.13, examples)     | HTTP client in microservices demo |
@@ -251,8 +251,7 @@ mod tests {
 
 ### Version Compatibility Notes
 
-- Examples use `reqwest-tracing` 0.7 with the `opentelemetry_0_31` feature, aligned with workspace OpenTelemetry 0.31.
-- `opentelemetry-otlp` still depends on `reqwest` 0.12 internally; the workspace may resolve both 0.12 and 0.13 until OTLP upgrades.
+- Examples use `reqwest-tracing` 0.7 with the `opentelemetry_0_32` feature, aligned with workspace OpenTelemetry 0.32.
 - Always check compatibility when upgrading OpenTelemetry crates as they often have breaking changes
 
 ## Environment Variables

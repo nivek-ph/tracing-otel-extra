@@ -4,6 +4,7 @@
 
 ### ⚠️ Breaking Changes
 
+- Upgrade OpenTelemetry dependencies to `0.32` and `tracing-opentelemetry` to `0.33`. Downstream crates must use matching OpenTelemetry versions.
 - Change `make_request_span` to accept a customization callback that runs before remote parent context is applied.
 - Return `LoggerGuard` from `Logger::init`, `init_logging`, and `init_logging_from_env`.
 - Remove the public `logger::create_output_layers` and `logger::set_nonblocking_appender_guard` APIs so writer ownership cannot escape the returned guard. Applications should initialize logging through `Logger::init`, `init_logging`, or `init_logging_from_env` and retain the returned `LoggerGuard` for the lifetime of logging.
