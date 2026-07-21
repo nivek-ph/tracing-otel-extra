@@ -4,6 +4,7 @@
 
 ### ⚠️ Breaking Changes
 
+- Upgrade OpenTelemetry dependencies to `0.32` and `tracing-opentelemetry` to `0.33`. Downstream crates must use matching OpenTelemetry versions.
 - Remove `Clone` from `OtelGuard` so dropping a duplicate cannot shut down shared OpenTelemetry providers early.
 
 ## [0.31.8](https://github.com/nivek-ph/tracing-otel-extra/compare/tracing-opentelemetry-extra-v0.31.7...tracing-opentelemetry-extra-v0.31.8)
