@@ -1,17 +1,25 @@
+use std::{
+    net::SocketAddr,
+    sync::{Mutex, OnceLock},
+};
+
 use axum::{
     Router,
     body::Body,
+    extract::ConnectInfo,
     http::{Method, Request, StatusCode},
     routing::get,
 };
 use axum_otel::{AxumOtelOnFailure, AxumOtelOnResponse, AxumOtelSpanCreator, Level};
 use http_body_util::BodyExt;
-use opentelemetry::{global, trace::TracerProvider};
+use opentelemetry::{
+    global,
+    trace::{SpanKind, TracerProvider},
+};
 use opentelemetry_sdk::{
     Resource,
     trace::{InMemorySpanExporter, RandomIdGenerator, Sampler, SdkTracerProvider},
 };
-use std::sync::{Mutex, OnceLock};
 use tower::ServiceExt;
 use tower_http::trace::TraceLayer;
 use tracing::instrument;
@@ -41,7 +49,7 @@ fn span_attr(span: &opentelemetry_sdk::trace::SpanData, key: &str) -> Option<Str
 }
 
 fn app() -> Router<()> {
-    Router::new().route("/", get(hello)).layer(
+    Router::new().route("/", get(hello)).route_layer(
         TraceLayer::new_for_http()
             .make_span_with(AxumOtelSpanCreator::new().level(Level::INFO))
             .on_response(AxumOtelOnResponse::new().level(Level::INFO))
@@ -73,19 +81,18 @@ async fn test_axum_otel_middleware() {
     let app = app();
 
     // Send request using oneshot
-    let response = app
-        .oneshot(
-            Request::builder()
-                .uri("/?foo=bar")
-                .header("host", "example.com")
-                .header("user-agent", "integration-test")
-                .header("x-forwarded-proto", "https")
-                .method(Method::GET)
-                .body(Body::empty())
-                .expect("Failed to build request"),
-        )
-        .await
-        .expect("Failed to send request");
+    let mut request = Request::builder()
+        .uri("/?foo=bar")
+        .header("host", "example.com")
+        .header("user-agent", "integration-test")
+        .header("x-forwarded-proto", "https")
+        .method(Method::GET)
+        .body(Body::empty())
+        .expect("Failed to build request");
+    request
+        .extensions_mut()
+        .insert(ConnectInfo(SocketAddr::from(([192, 0, 2, 10], 3000))));
+    let response = app.oneshot(request).await.expect("Failed to send request");
 
     assert_eq!(response.status(), StatusCode::OK);
 
@@ -110,11 +117,9 @@ async fn test_axum_otel_middleware() {
         "Expected at least one span to be created"
     );
 
-    // With oneshot(), there's no MatchedPath, so span name is just "GET"
-    // When using a real server, it would be "GET /"
     let request_span = spans
         .iter()
-        .find(|s| s.name == "GET" || s.name == "GET /")
+        .find(|s| s.name == "GET /")
         .expect("Request span not found");
 
     let hello_span = spans
@@ -127,76 +132,27 @@ async fn test_axum_otel_middleware() {
         request_span.span_context.span_id(),
         "Handler span should be a child of the request span"
     );
-
+    assert_eq!(request_span.span_kind, SpanKind::Server);
     assert_eq!(
-        span_attr(request_span, "server.address"),
-        Some("example.com".to_string()),
-        "Expected server.address to be example.com"
+        span_attr(request_span, "http.route"),
+        Some("/".to_string()),
+        "Expected http.route to be /"
     );
+    assert_eq!(
+        span_attr(request_span, "client.address"),
+        Some("192.0.2.10".to_string()),
+        "Expected client.address to be 192.0.2.10"
+    );
+
     assert_eq!(
         span_attr(request_span, "http.request.method"),
         Some("GET".to_string()),
         "Expected http.request.method to be GET"
     );
     assert_eq!(
-        span_attr(request_span, "user_agent.original"),
-        Some("integration-test".to_string()),
-        "Expected user_agent.original to be integration-test"
-    );
-    assert_eq!(
         span_attr(request_span, "http.response.status_code"),
         Some("200".to_string()),
         "Expected http.response.status_code to be 200"
-    );
-    assert_eq!(
-        span_attr(request_span, "url.path"),
-        Some("/".to_string()),
-        "Expected url.path to be /"
-    );
-    assert_eq!(
-        span_attr(request_span, "url.scheme"),
-        Some("https".to_string()),
-        "Expected url.scheme to be https"
-    );
-    assert_eq!(
-        span_attr(request_span, "url.query"),
-        Some("foo=bar".to_string()),
-        "Expected url.query to be foo=bar"
-    );
-    assert_eq!(
-        span_attr(request_span, "network.protocol.name"),
-        Some("http".to_string()),
-        "Expected network.protocol.name to be http"
-    );
-    assert_eq!(
-        span_attr(request_span, "network.protocol.version"),
-        Some("1.1".to_string()),
-        "Expected network.protocol.version to be 1.1"
-    );
-    assert_eq!(
-        span_attr(request_span, "http.method"),
-        None,
-        "Expected deprecated http.method to be absent"
-    );
-    assert_eq!(
-        span_attr(request_span, "http.status_code"),
-        None,
-        "Expected deprecated http.status_code to be absent"
-    );
-    assert_eq!(
-        span_attr(request_span, "http.target"),
-        None,
-        "Expected deprecated http.target to be absent"
-    );
-    assert_eq!(
-        span_attr(request_span, "http.host"),
-        None,
-        "Expected deprecated http.host to be absent"
-    );
-    assert_eq!(
-        span_attr(request_span, "http.user_agent"),
-        None,
-        "Expected deprecated http.user_agent to be absent"
     );
 
     provider
@@ -205,7 +161,7 @@ async fn test_axum_otel_middleware() {
 }
 
 #[tokio::test(flavor = "current_thread")]
-async fn test_axum_otel_omits_missing_optional_fields() {
+async fn test_axum_otel_omits_missing_peer() {
     let _test_guard = test_lock().lock().expect("test lock poisoned");
 
     let exporter = InMemorySpanExporter::default();
@@ -252,28 +208,13 @@ async fn test_axum_otel_omits_missing_optional_fields() {
 
     let request_span = spans
         .iter()
-        .find(|s| s.name == "GET" || s.name == "GET /")
+        .find(|s| s.name == "GET /")
         .expect("Request span not found");
 
     assert_eq!(
-        span_attr(request_span, "server.address"),
+        span_attr(request_span, "client.address"),
         None,
-        "Expected server.address to be omitted when missing"
-    );
-    assert_eq!(
-        span_attr(request_span, "user_agent.original"),
-        None,
-        "Expected user_agent.original to be omitted when missing"
-    );
-    assert_eq!(
-        span_attr(request_span, "url.query"),
-        None,
-        "Expected url.query to be omitted when missing"
-    );
-    assert_eq!(
-        span_attr(request_span, "url.scheme"),
-        None,
-        "Expected url.scheme to be omitted when missing"
+        "Expected client.address to be omitted when missing"
     );
 
     provider

@@ -226,9 +226,9 @@ mod tests {
 
 #### Modifying span attributes
 
-1. Update `AxumOtelSpanCreator::make_span` in `crates/axum-otel/src/make_span.rs`
+1. Update the shared HTTP server span schema in `crates/tracing-otel/src/http/span.rs`; framework adapters customize spans through the `make_request_span` callback
 2. Ensure compliance with [OpenTelemetry HTTP traces](https://opentelemetry.io/docs/specs/semconv/http/http-spans/) (see `axum_otel` crate docs on docs.rs for the attribute migration table and `CHANGELOG.md` for breaking renames)
-3. Keep `tracing-otel-extra` `make_request_span` (`crates/tracing-otel/src/http/span.rs`) in sync when changing shared HTTP field names
+3. Keep `AxumOtelSpanCreator` limited to Axum-specific enrichment such as route, peer address, span name, and span kind
 4. Update documentation with new attributes
 
 ## Dependencies
@@ -309,4 +309,3 @@ This project uses `release-plz` for automated releases. See `release-plz.toml` f
 - [Axum Framework](https://github.com/tokio-rs/axum)
 - [Tower HTTP](https://github.com/tower-rs/tower-http)
 - [OpenTelemetry Semantic Conventions](https://opentelemetry.io/docs/concepts/semantic-conventions/)
-

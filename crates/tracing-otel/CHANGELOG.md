@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### ⚠️ Breaking Changes
+
+- Change `make_request_span` to accept a customization callback that runs before remote parent context is applied.
 
 ## [0.31.8](https://github.com/nivek-ph/tracing-otel-extra/compare/tracing-otel-extra-v0.31.7...tracing-otel-extra-v0.31.8)
 
