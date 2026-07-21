@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.33.1]
+
 ### Added
 
 - Publish `otel-init` `0.33.1` as the successor to `tracing-opentelemetry-extra` `0.33.0`. These are separate crates.io packages; Cargo does not migrate dependencies automatically.
