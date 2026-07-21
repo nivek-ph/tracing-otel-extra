@@ -1,7 +1,7 @@
-# tracing-otel-extra
+# tracing-otel
 
-[![Crates.io](https://img.shields.io/crates/v/tracing-otel-extra.svg)](https://crates.io/crates/tracing-otel-extra)
-[![Documentation](https://docs.rs/tracing-otel-extra/badge.svg)](https://docs.rs/tracing-otel-extra)
+[![Crates.io](https://img.shields.io/crates/v/tracing-otel.svg)](https://crates.io/crates/tracing-otel)
+[![Documentation](https://docs.rs/tracing-otel/badge.svg)](https://docs.rs/tracing-otel)
 [![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](LICENSE-MIT)
 
 A comprehensive collection of tracing and logging utilities for Rust applications, with special focus on Axum web framework integration and OpenTelemetry observability.
@@ -87,7 +87,7 @@ OpenTelemetry tracing middleware for Axum web framework
 - Customizable span attributes
 - Metrics collection
 
-### [tracing-otel-extra](./crates/tracing-otel/README.md)
+### [tracing-otel](./crates/tracing-otel/README.md)
 OpenTelemetry tracing support for tracing-subscriber
 - Easy-to-use configuration through Builder pattern
 - Multiple log output formats (Compact, Pretty, JSON)
@@ -95,12 +95,28 @@ OpenTelemetry tracing support for tracing-subscriber
 - Built-in metrics support
 - Environment detection and configuration
 
-### [tracing-opentelemetry-extra](./crates/tracing-opentelemetry/README.md)
+### [otel-init](./crates/otel-init/README.md)
 Enhanced OpenTelemetry integration utilities
 - Clean, easy-to-use API for OpenTelemetry setup
 - Configurable sampling and resource attributes
 - Automatic cleanup with guard pattern
 - Support for both tracing and metrics
+
+## Migrating from 0.33.0
+
+`tracing-otel` and `otel-init` are new crates.io packages that succeed `tracing-otel-extra` and `tracing-opentelemetry-extra`. Cargo does not migrate package names automatically.
+
+```toml
+# Before
+tracing-otel-extra = "0.33.0"
+tracing-opentelemetry-extra = "0.33.0"
+
+# After
+tracing-otel = "0.33.1"
+otel-init = "0.33.1"
+```
+
+Update Rust imports from `tracing_otel_extra` to `tracing_otel` and from `tracing_opentelemetry_extra` to `otel_init`. The old `0.33.0` packages remain available until they are yanked after the successors are published.
 
 ## 🛠️ Installation
 
@@ -109,12 +125,12 @@ Add the desired crate to your `Cargo.toml`:
 ```toml
 # For Axum web framework integration
 [dependencies]
-axum-otel = "0.31"
+axum-otel = "0.33"
 axum = { version = "0.8", features = ["macros"] }
 tower-http = { version = "0.6.6", features = ["trace"] }
 
 # For general OpenTelemetry tracing
-tracing-otel-extra = "0.31"
+tracing-otel = "0.33"
 tracing = "0.1"
 tokio = { version = "1.0", features = ["full"] }
 ```
@@ -137,8 +153,8 @@ async fn handler() -> &'static str {
 #[tokio::main]
 async fn main() {
     // Initialize tracing
-    let _guard = tracing_otel_extra::Logger::new("my-service")
-        .with_format(tracing_otel_extra::LogFormat::Json)
+    let _guard = tracing_otel::Logger::new("my-service")
+        .with_format(tracing_otel::LogFormat::Json)
         .init()
         .expect("Failed to initialize tracing");
 
@@ -162,7 +178,7 @@ async fn main() {
 ### Advanced Configuration
 
 ```rust
-use tracing_otel_extra::{Logger, LogFormat};
+use tracing_otel::{Logger, LogFormat};
 use opentelemetry::KeyValue;
 use tracing::Level;
 
@@ -368,13 +384,13 @@ let _guard = Logger::new("service")
 - `AxumOtelOnResponse` - Handles response logging
 - `AxumOtelOnFailure` - Handles error logging
 
-### tracing-otel-extra
+### tracing-otel
 
 - `Logger` - Main configuration builder
 - `LogFormat` - Log output format options
 - `LoggerGuard` - RAII ownership for telemetry providers and non-blocking writer shutdown
 
-### tracing-opentelemetry-extra
+### otel-init
 
 - `init_tracer_provider` - Initialize OpenTelemetry tracer
 - `init_meter_provider` - Initialize OpenTelemetry meter
@@ -415,8 +431,8 @@ at your option.
 
 ## 🔗 Links
 
-- [Documentation](https://docs.rs/tracing-otel-extra/)
-- [Crates.io](https://crates.io/crates/tracing-otel-extra)
+- [Documentation](https://docs.rs/tracing-otel/)
+- [Crates.io](https://crates.io/crates/tracing-otel)
 - [GitHub Repository](https://github.com/nivek-ph/tracing-otel-extra)
 - [OpenTelemetry](https://opentelemetry.io/)
 - [Axum Framework](https://github.com/tokio-rs/axum)

@@ -24,7 +24,7 @@ use tracing::{Level, Span, field::Empty};
 /// ```rust
 /// use http::Request;
 /// use tracing::Level;
-/// use tracing_otel_extra::http::span::make_request_span;
+/// use tracing_otel::http::span::make_request_span;
 ///
 /// let request = Request::builder().uri("/items").body(()).unwrap();
 /// let _span = make_request_span(Level::INFO, &request, |span| {

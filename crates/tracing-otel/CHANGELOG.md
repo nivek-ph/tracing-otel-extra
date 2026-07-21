@@ -1,6 +1,24 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
 ## [Unreleased]
+
+### Added
+
+- Publish `tracing-otel` `0.33.1` as the successor to `tracing-otel-extra` `0.33.0`. These are separate crates.io packages; Cargo does not migrate dependencies automatically.
+
+### Migration
+
+- Replace `tracing-otel-extra = "0.33.0"` with `tracing-otel = "0.33.1"` in `Cargo.toml`.
+- Replace Rust imports from `tracing_otel_extra` with `tracing_otel`.
+- The old `tracing-otel-extra` package remains available at `0.33.0` until it is yanked after the successor is published.
+
+## Predecessor history
+
+The entries below were published under the `tracing-otel-extra` package name.
+
+## [0.33.0](https://github.com/nivek-ph/tracing-otel-extra/compare/tracing-otel-extra-v0.32.1...tracing-otel-extra-v0.33.0)
 
 ### ⚠️ Breaking Changes
 
@@ -68,10 +86,3 @@
 - Update workspace dependencies and enhance CI configuration - ([244742d](https://github.com/nivek-ph/tracing-otel-extra/commit/244742d220816d3750abfd67175be04bacd057da))
 
 - Update dependencies and refactor configuration handling - ([576ba88](https://github.com/nivek-ph/tracing-otel-extra/commit/576ba887424fc684aaea33a92cfc60debe36a521))
-
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). 

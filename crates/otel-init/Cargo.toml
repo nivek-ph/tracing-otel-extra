@@ -1,15 +1,15 @@
 [package]
-name = "tracing-opentelemetry-extra"
+name = "otel-init"
 rust-version.workspace = true
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
 categories.workspace = true
-description = "Bootstrap utilities for tracing and OpenTelemetry integration."
-documentation = "https://docs.rs/tracing-opentelemetry-extra"
-homepage = "https://github.com/nivek-ph/tracing-otel-extra/tree/main/crates/tracing-opentelemetry"
-repository = "https://github.com/nivek-ph/tracing-otel-extra/tree/main/crates/tracing-opentelemetry"
+description = "OpenTelemetry provider and subscriber initialization with lifecycle management."
+documentation = "https://docs.rs/otel-init"
+homepage = "https://github.com/nivek-ph/tracing-otel-extra/tree/main/crates/otel-init"
+repository = "https://github.com/nivek-ph/tracing-otel-extra/tree/main/crates/otel-init"
 readme = "README.md"
 keywords = ["tracing", "opentelemetry"]
 

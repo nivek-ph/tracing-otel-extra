@@ -14,7 +14,7 @@ services:
       source: 'docker'
       tag: 'tracing-otel-extra'
 
-  # axum-otel-demo is a demo application that uses the tracing-otel-extra crate
+  # axum-otel-demo is a demo application that uses the tracing-otel crate
   axum-otel-demo:
     image: ghcr.io/nivek-ph/tracing-otel-extra:main-78cf8fd
     container_name: axum-otel-demo

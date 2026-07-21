@@ -19,7 +19,7 @@ checksum = "a23eb6b1614318a8071c9b2521f36b424b2c83db5eb3a0fead4a6c0809af6e61"
 
 [[package]]
 name = "articles-service"
-version = "0.33.0"
+version = "0.33.1"
 dependencies = [
  "anyhow",
  "axum",
@@ -35,7 +35,7 @@ dependencies = [
  "tower",
  "tower-http",
  "tracing",
- "tracing-otel-extra",
+ "tracing-otel",
 ]
 
 [[package]]
@@ -137,7 +137,7 @@ dependencies = [
 
 [[package]]
 name = "axum-otel"
-version = "0.33.0"
+version = "0.33.1"
 dependencies = [
  "axum",
  "http-body-util",
@@ -148,13 +148,13 @@ dependencies = [
  "tower-http",
  "tracing",
  "tracing-opentelemetry",
- "tracing-otel-extra",
+ "tracing-otel",
  "tracing-subscriber",
 ]
 
 [[package]]
 name = "axum-otel-demo"
-version = "0.33.0"
+version = "0.33.1"
 dependencies = [
  "anyhow",
  "axum",
@@ -166,7 +166,7 @@ dependencies = [
  "tower",
  "tower-http",
  "tracing",
- "tracing-otel-extra",
+ "tracing-otel",
 ]
 
 [[package]]
@@ -1078,6 +1078,21 @@ dependencies = [
  "rand",
  "thiserror",
  "tokio",
+]
+
+[[package]]
+name = "otel-init"
+version = "0.33.1"
+dependencies = [
+ "anyhow",
+ "opentelemetry",
+ "opentelemetry-appender-tracing",
+ "opentelemetry-otlp",
+ "opentelemetry_sdk",
+ "tokio",
+ "tracing",
+ "tracing-opentelemetry",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -2197,23 +2212,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "tracing-opentelemetry-extra"
-version = "0.33.0"
-dependencies = [
- "anyhow",
- "opentelemetry",
- "opentelemetry-appender-tracing",
- "opentelemetry-otlp",
- "opentelemetry_sdk",
- "tokio",
- "tracing",
- "tracing-opentelemetry",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "tracing-otel-extra"
-version = "0.33.0"
+name = "tracing-otel"
+version = "0.33.1"
 dependencies = [
  "anyhow",
  "config",
@@ -2222,6 +2222,7 @@ dependencies = [
  "opentelemetry-http",
  "opentelemetry-otlp",
  "opentelemetry_sdk",
+ "otel-init",
  "serde",
  "serde_json",
  "serial_test",
@@ -2229,7 +2230,6 @@ dependencies = [
  "tracing",
  "tracing-appender",
  "tracing-opentelemetry",
- "tracing-opentelemetry-extra",
  "tracing-subscriber",
 ]
 
@@ -2302,7 +2302,7 @@ dependencies = [
 
 [[package]]
 name = "users-service"
-version = "0.33.0"
+version = "0.33.1"
 dependencies = [
  "anyhow",
  "axum",
@@ -2314,7 +2314,7 @@ dependencies = [
  "tower",
  "tower-http",
  "tracing",
- "tracing-otel-extra",
+ "tracing-otel",
 ]
 
 [[package]]

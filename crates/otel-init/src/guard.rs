@@ -9,7 +9,7 @@ use tracing::warn;
 /// The guard has unique ownership of provider shutdown and cannot be cloned.
 ///
 /// ```compile_fail
-/// use tracing_opentelemetry_extra::OtelGuard;
+/// use otel_init::OtelGuard;
 ///
 /// let guard = OtelGuard::new(None, None, None);
 /// let _duplicate = guard.clone();

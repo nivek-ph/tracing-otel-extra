@@ -19,7 +19,7 @@
 //! Basic usage with manual setup:
 //! ```rust,ignore
 //! use opentelemetry::KeyValue;
-//! use tracing_opentelemetry_extra::{get_resource, init_tracer_provider, init_env_filter, init_tracing_subscriber, init_meter_provider, init_logger_provider};
+//! use otel_init::{get_resource, init_tracer_provider, init_env_filter, init_tracing_subscriber, init_meter_provider, init_logger_provider};
 //! use tracing::Level;
 //!
 //! #[tokio::main]

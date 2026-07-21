@@ -17,7 +17,7 @@
 //! # Quick Start
 //!
 //! ```rust
-//! use tracing_otel_extra::Logger;
+//! use tracing_otel::Logger;
 //! use tracing::Level;
 //!
 //! #[tokio::main]
@@ -35,7 +35,7 @@
 //! # Advanced Configuration
 //!
 //! ```rust
-//! use tracing_otel_extra::Logger;
+//! use tracing_otel::Logger;
 //! use tracing::Level;
 //! use opentelemetry::KeyValue;
 //!
